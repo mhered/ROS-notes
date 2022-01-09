@@ -1,0 +1,8 @@
+# Service definition file
+# request message
+
+float32 height
+float32 width
+---
+# response message
+float32 area
