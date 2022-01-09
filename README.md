@@ -12,13 +12,13 @@ Loosely based on the Udemy ROS for Beginners courses by [Anis Koubaa](https://ww
 
 ### ROS for Beginners I: Course structure
 
-[Part 1](./1.ROS-essentials-Nov21-Lessons-1-77.md): ROS basics L#001-#081, Assignments 1-4 
+[Part 1](./udemy-ROS-essentials-course-notes/1.ROS-essentials-Nov21-Lessons-1-77.md): ROS basics L#001-#081, Assignments 1-4 
 
-[Part 2](./2.ROS-essentials-Motion-Nov21-L82-112.md): Motion with ROS L#082-#113, Assignment 5
+[Part 2](./udemy-ROS-essentials-course-notes/2.ROS-essentials-Motion-Nov21-L82-112.md): Motion with ROS L#082-#113, Assignment 5
 
-[Part 3](3.ROS-essentials-Perception-Dec21-L114.138.md): Perception: Computer vision with OpenCV and laser scanners L#114-#139, Assignments 6-7 
+[Part 3](./udemy-ROS-essentials-course-notes/3.ROS-essentials-Perception-Dec21-L114.138.md): Perception: Computer vision with OpenCV and laser scanners L#114-#139, Assignments 6-7 
 
-[Part 4](4.ROS-essentials-rosserial-Dec21.md): Arduino bots and sensors with ROS L#140-150
+[Part 4](./udemy-ROS-essentials-course-notes/4.ROS-essentials-rosserial-Dec21.md): Arduino bots and sensors with ROS L#140-150
 
 ### TO DO as of 09.01
 
@@ -31,5 +31,4 @@ Loosely based on the Udemy ROS for Beginners courses by [Anis Koubaa](https://ww
 - [ ] Order code in `Arduino` folder and in `catkin_ws/src` folder
 
 - [ ] Prepare blog posts
-
 
