@@ -23,6 +23,7 @@ Loosely based on the Udemy ROS for Beginners courses by [Anis Koubaa](https://ww
 ### TO DO as of 09.01
 
 - [x] upload to github
+- [ ] upload video Kinect
 - [ ] Lessons #104-107 and **Assignment 5** on cleaning app (already done, pending submission)
 - [ ] Lesson #108 on ROS network config. See also #27 and #28 on virtual machines
 
