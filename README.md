@@ -35,4 +35,4 @@ Loosely based on the Udemy ROS for Beginners courses by [Anis Koubaa](https://ww
 
 ### ROS for Beginners II: Localization, Navigation and SLAM
 
-[Part 1](./udemy-ROS-essentials-course-notes/5.ROS-navigation-Jan21-Lessons 1-.md): Introduction
+[Part 1](./udemy-ROS-essentials-course-notes/5.ROS-navigation-Jan21-Lessons-1-.md): Introduction
