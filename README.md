@@ -27,7 +27,7 @@ Loosely based on the Udemy ROS for Beginners courses by [Anis Koubaa](https://ww
 - [ ] Lessons #104-107 and **Assignment 5** on cleaning app (already done, pending submission)
 - [ ] Lesson #108 on ROS network config. See also #27 and #28 on virtual machines
 
-- [ ] Lessons #109 and #110 ROS launch files with includes and parameters 
+- [x] Lessons #109 and #110 ROS launch files with includes and parameters 
 - [ ] **Assignment 7** on obstacle avoidance in Turtlebot3 simulator
 - [ ] Order code in `Arduino` folder and in `catkin_ws/src` folder
 

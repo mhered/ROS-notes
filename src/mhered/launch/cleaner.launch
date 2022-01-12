@@ -1,0 +1,4 @@
+<launch>
+	<include file="$(find mhered)/launch/my_turtle.launch"/>
+    <node pkg="mhered" type="cleaner_robot.py" name="cleaner_node" />
+</launch>

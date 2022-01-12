@@ -1,0 +1,15 @@
+<launch>
+	<include file="$(find mhered)/launch/my_turtle.launch"/>
+
+    <param name ="WAIT" value="0.1"/>
+	<param name ="LIN_SPEED" value="6.0"/>
+	<param name ="ROT_SPEED" value="120.0"/>
+
+	<node pkg="mhered" type="cleaner_robot.py"
+		name="cleaner_node" output = "screen"/>
+</launch>
+
+<launch>
+	<include file="$(find mhered)/launch/my_turtle.launch"/>
+    <node pkg="mhered" type="cleaner_robot.py" name="cleaner_node" />
+</launch>

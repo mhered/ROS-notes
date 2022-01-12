@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import rospy
 from geometry_msgs.msg import Twist
@@ -9,9 +9,10 @@ import time
 
 from std_srvs.srv import Empty
 
-x=0.0
-y=0.0
-yaw=0.0
+x = 0.0
+y = 0.0
+yaw = 0.0
+
 
 def pose_callback(pose_message):
     """ Pose callback method """
@@ -27,10 +28,10 @@ def move(velocity_publisher, speed, distance, is_forward):
     # declare a Twist message to send velocity commands
     velocity_message = Twist()
 
-    # get current location from the global variable before entering the loop 
+    # get current location from the global variable before entering the loop
     global x, y
     # save initial coordinates
-    x0 = x    
+    x0 = x
     y0 = y
 
     if (is_forward):
@@ -39,20 +40,20 @@ def move(velocity_publisher, speed, distance, is_forward):
         velocity_message.linear.x = -abs(speed)
 
     distance_moved = 0.0
-    loop_rate = rospy.Rate(50) # we publish the velocity at 10 Hz (10 times per second)
+    loop_rate = rospy.Rate(50)  # we publish the velocity at 10 Hz (10 times per second)
 
     rospy.loginfo("Straight motion")
     while True:
 
         velocity_publisher.publish(velocity_message)
         loop_rate.sleep()
-        
+
         distance_moved = abs(math.sqrt(((x-x0) ** 2) + ((y-y0) ** 2)))
         print(f"Distance moved: {distance_moved:10.4} Pose: ({x:8.4}, {y:8.4}, {yaw:8.4})")
         if not (distance_moved < distance):
             rospy.loginfo("Distance reached")
             break
-        
+
     # stop the robot after the distance is reached
     velocity_message.linear.x = 0.0
     velocity_publisher.publish(velocity_message)
@@ -71,10 +72,9 @@ def rotate(velocity_publisher, omega_degrees, angle_degrees, is_clockwise):
     else:
         velocity_message.angular.z = abs(omega)
 
-    loop_rate = rospy.Rate(50) # we publish the velocity at 10 Hz (10 times per second)
+    loop_rate = rospy.Rate(50)  # we publish the velocity at 10 Hz (10 times per second)
 
     rospy.loginfo("Rotation in place")
-
 
     # get initial timestamp
     t0 = rospy.Time.now().to_sec()
@@ -87,12 +87,12 @@ def rotate(velocity_publisher, omega_degrees, angle_degrees, is_clockwise):
         t1 = rospy.Time.now().to_sec()
         curr_yaw_degrees = (t1-t0)*omega_degrees
         loop_rate.sleep()
-        
+
         print(f"Angle rotated: {curr_yaw_degrees:10.4} Pose: ({x:8.4}, {y:8.4}, {yaw:8.4})")
         if not(curr_yaw_degrees < angle_degrees):
             rospy.loginfo("Angle reached")
             break
-        
+
     # stop the robot after the angle is reached
     velocity_message.angular.z = 0.0
     velocity_publisher.publish(velocity_message)
@@ -104,14 +104,14 @@ def set_yaw(velocity_publisher, orientation_degrees):
     # declare a Twist message to send velocity commands
     velocity_message = Twist()
 
-    # get current location from the global variable before entering the loop 
+    # get current location from the global variable before entering the loop
     global yaw
 
     yaw_degrees = math.degrees(yaw)
 
-    # subtract angles, wrapping result to [-180, 180] 
+    # subtract angles, wrapping result to [-180, 180]
     angle_degrees = ((orientation_degrees - yaw_degrees + 180) % 360) - 180
-    
+
     # rotate towards smallest angle difference
     if angle_degrees < 0:
         is_clockwise = True
@@ -128,7 +128,7 @@ def go_to(velocity_publisher, goal):
     # declare a Twist message to send velocity commands
     velocity_message = Twist()
 
-    # use current location from the global variable (constantly updated by pose_callback()) 
+    # use current location from the global variable (constantly updated by pose_callback())
     global x, y, yaw
 
     x_goal = goal[0]
@@ -138,7 +138,7 @@ def go_to(velocity_publisher, goal):
     K_DISTANCE = .6
     K_ANGLE = 15
 
-    loop_rate = rospy.Rate(50) # we publish the velocity at 10 Hz (10 times per second)
+    loop_rate = rospy.Rate(50)  # we publish the velocity at 10 Hz (10 times per second)
 
     rospy.loginfo(f"Go to goal: {goal}")
 
@@ -146,7 +146,7 @@ def go_to(velocity_publisher, goal):
 
         distance_to_goal = abs(math.sqrt(((x_goal-x) ** 2) + ((y_goal-y) ** 2)))
         angle_to_goal = math.atan2(y_goal-y, x_goal-x)
-    
+
         print(f"Distance to goal: {distance_to_goal:10.4} Pose: ({x:8.4}, {y:8.4}, {yaw:8.4})")
 
         if distance_to_goal < THRESHOLD:
@@ -155,10 +155,10 @@ def go_to(velocity_publisher, goal):
 
         velocity_message.linear.x = K_DISTANCE * distance_to_goal
         velocity_message.angular.z = K_ANGLE * (angle_to_goal - yaw)
-             
+
         velocity_publisher.publish(velocity_message)
         loop_rate.sleep()
-        
+
     # stop the robot after the distance is reached
     velocity_message.linear.x = 0.0
     velocity_message.angular.z = 0.0
@@ -168,9 +168,8 @@ def go_to(velocity_publisher, goal):
 def spiral(velocity_publisher, omega, d_vel):
     """ Spiral method """
 
-    # use current location from the global variable (constantly updated by pose_callback()) 
-    global x, y 
-
+    # use current location from the global variable (constantly updated by pose_callback())
+    global x, y
 
     # declare a Twist message to send velocity commands
     velocity_message = Twist()
@@ -178,20 +177,20 @@ def spiral(velocity_publisher, omega, d_vel):
     OMEGA = omega
     VEL_INCREMENT = d_vel
 
-    loop_rate = rospy.Rate(50) # we publish the velocity at 10 Hz (10 times per second)
+    loop_rate = rospy.Rate(50)  # we publish the velocity at 10 Hz (10 times per second)
 
     rospy.loginfo("Spiral")
 
-    while x>0.5 and x<10.5 and y>0.5 and y<10.5:
-        
-        velocity_message.linear.x += VEL_INCREMENT 
+    while x > 0.5 and x < 10.5 and y > 0.5 and y < 10.5:
+
+        velocity_message.linear.x += VEL_INCREMENT
         velocity_message.angular.z = OMEGA
 
         print(f"Linear speed: {velocity_message.linear.x:10.4} Pose: ({x:8.4}, {y:8.4}, {yaw:8.4})")
-             
+
         velocity_publisher.publish(velocity_message)
         loop_rate.sleep()
-        
+
     rospy.loginfo("Edge reached")
 
     # stop the robot after condition is fulfilled
@@ -200,144 +199,103 @@ def spiral(velocity_publisher, omega, d_vel):
     velocity_publisher.publish(velocity_message)
 
 
-def cleaner_app(velocity_publisher):
+def cleaner_app(velocity_publisher, WAIT, LIN_SPEED, ROT_SPEED):
     """ Cleaner robot method """
 
     # save initial position
     global x, y, yaw
     x0, y0, yaw0 = x, y, yaw
 
-    WAIT = .5
-    LIN_SPEED = 4.0
-    ROT_SPEED = 30
-
-
-    go_to(velocity_publisher = velocity_publisher, 
-                goal = (0.5, 0.5))
+    go_to(velocity_publisher=velocity_publisher,
+          goal=(0.5, 0.5))
     time.sleep(WAIT)
 
-    set_yaw(velocity_publisher = velocity_publisher, 
-            orientation_degrees = 90)
+    set_yaw(velocity_publisher=velocity_publisher,
+            orientation_degrees=90)
     time.sleep(WAIT)
 
     for i in range(6):
 
-        move(velocity_publisher = velocity_publisher, 
-            speed = LIN_SPEED, 
-            distance = 10.0, 
-            is_forward = True)
+        move(velocity_publisher=velocity_publisher,
+             speed=LIN_SPEED,
+             distance=10.0,
+             is_forward=True)
         time.sleep(WAIT)
 
-        rotate(velocity_publisher = velocity_publisher, 
-            omega_degrees = ROT_SPEED, 
-            angle_degrees = 90, 
-            is_clockwise = True)
-        time.sleep(WAIT)
-        
-        move(velocity_publisher = velocity_publisher, 
-            speed = LIN_SPEED, 
-            distance = 1.0, 
-            is_forward = True)
+        rotate(velocity_publisher=velocity_publisher,
+               omega_degrees=ROT_SPEED,
+               angle_degrees=90,
+               is_clockwise=True)
         time.sleep(WAIT)
 
-        rotate(velocity_publisher = velocity_publisher, 
-            omega_degrees = ROT_SPEED, 
-            angle_degrees = 90, 
-            is_clockwise = True)
+        move(velocity_publisher=velocity_publisher,
+             speed=LIN_SPEED,
+             distance=1.0,
+             is_forward=True)
         time.sleep(WAIT)
 
-        move(velocity_publisher = velocity_publisher, 
-            speed = LIN_SPEED, 
-            distance = 10.0, 
-            is_forward = True)
-
+        rotate(velocity_publisher=velocity_publisher,
+               omega_degrees=ROT_SPEED,
+               angle_degrees=90,
+               is_clockwise=True)
         time.sleep(WAIT)
 
-        rotate(velocity_publisher = velocity_publisher, 
-            omega_degrees = ROT_SPEED, 
-            angle_degrees = 90, 
-            is_clockwise = False)
-
-        time.sleep(WAIT)
-        
-        move(velocity_publisher = velocity_publisher, 
-            speed = LIN_SPEED, 
-            distance = 1.0, 
-            is_forward = True)
+        move(velocity_publisher=velocity_publisher,
+             speed=LIN_SPEED,
+             distance=10.0,
+             is_forward=True)
 
         time.sleep(WAIT)
 
-        rotate(velocity_publisher = velocity_publisher, 
-            omega_degrees = ROT_SPEED, 
-            angle_degrees = 90, 
-            is_clockwise = False)
+        rotate(velocity_publisher=velocity_publisher,
+               omega_degrees=ROT_SPEED,
+               angle_degrees=90,
+               is_clockwise=False)
+
+        time.sleep(WAIT)
+
+        move(velocity_publisher=velocity_publisher,
+             speed=LIN_SPEED,
+             distance=1.0,
+             is_forward=True)
+
+        time.sleep(WAIT)
+
+        rotate(velocity_publisher=velocity_publisher,
+               omega_degrees=ROT_SPEED,
+               angle_degrees=90,
+               is_clockwise=False)
 
     # return to initial position
-    go_to(velocity_publisher = velocity_publisher, 
-                goal = (x0, y0))
+    go_to(velocity_publisher=velocity_publisher,
+          goal=(x0, y0))
     time.sleep(WAIT)
 
-    set_yaw(velocity_publisher = velocity_publisher, 
-            orientation_degrees = math.degrees(yaw0))
+    set_yaw(velocity_publisher=velocity_publisher,
+            orientation_degrees=math.degrees(yaw0))
 
 
 if __name__ == '__main__':
     try:
         rospy.init_node('my_turtle_pose_node', anonymous=True)
-        
+
         # declare velocity publisher
         cmd_vel_topic = '/turtle1/cmd_vel'
         velocity_publisher = rospy.Publisher(cmd_vel_topic, Twist, queue_size=10)
 
         # declare pose subscriber
         pose_topic = "/turtle1/pose"
-        pose_subscriber = rospy.Subscriber(pose_topic, Pose, pose_callback) 
-        
-        time.sleep(1)
-    
-        # call to the function
-        
-        """
-        for i in range(4):
-            move(velocity_publisher = velocity_publisher, 
-                speed = 1.0, 
-                distance = 2.0, 
-                is_forward = True)
+        pose_subscriber = rospy.Subscriber(pose_topic, Pose, pose_callback)
 
-            time.sleep(1)
-
-            rotate(velocity_publisher = velocity_publisher, 
-                omega_degrees = 30, 
-                angle_degrees = 90, 
-                is_clockwise = True)
-
-            time.sleep(1)
-
-
-        spiral(velocity_publisher = velocity_publisher, 
-                omega = 2, d_vel = 0.02)
         time.sleep(1)
 
+        # get ROS parameters (or default)
+        WAIT = rospy.get_param("WAIT", 0.5)
+        LIN_SPEED = rospy.get_param("LIN_SPEED", 4.0)
+        ROT_SPEED = rospy.get_param("ROT_SPEED", 30.0)
 
-        go_to(velocity_publisher = velocity_publisher, 
-                goal = (2, 2))
-        time.sleep(1)
-
-        go_to(velocity_publisher = velocity_publisher, 
-                goal = (2, 6))
-        time.sleep(1)
-
-        go_to(velocity_publisher = velocity_publisher, 
-                goal = (6, 2))
-        time.sleep(1)
-
-        go_to(velocity_publisher = velocity_publisher, 
-                goal = (6, 6))
-        """
-        
-        
-
-        cleaner_app(velocity_publisher)
+        # call the function
+        cleaner_app(velocity_publisher, WAIT, LIN_SPEED, ROT_SPEED)
 
         print('start reset: ')
         time.sleep(5)
@@ -349,4 +307,3 @@ if __name__ == '__main__':
         rospy.spin()
     except rospy.ROSInterruptException:
         rospy.loginfo("node terminated.")
-
