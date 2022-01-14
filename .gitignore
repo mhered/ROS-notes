@@ -3,3 +3,9 @@ devel/
 .catkin_workspace
 **/CMakeLists.txt
 **/package.xml
+
+# this is for Mini Pupper
+/src/champ/
+/src/champ_teleop/
+/src/robots/
+/src/yocs_velocity_smoother/
