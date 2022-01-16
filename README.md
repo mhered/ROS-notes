@@ -20,19 +20,35 @@ Loosely based on the Udemy ROS for Beginners courses by [Anis Koubaa](https://ww
 
 [Part 4](./udemy-ROS-essentials-course-notes/4.ROS-essentials-rosserial-Dec21.md): Arduino bots and sensors with ROS L#140-150
 
-### TO DO as of 09.01
+### TO DO Course 1 as of 09.01
 
 - [x] upload to github
 - [x] upload video Kinect
 - [ ] Lessons #104-107 and **Assignment 5** on cleaning app (already done, pending submission)
 - [ ] Lesson #108 on ROS network config. See also #27 and #28 on virtual machines
-
 - [x] Lessons #109 and #110 ROS launch files with includes and parameters 
 - [ ] **Assignment 7** on obstacle avoidance in Turtlebot3 simulator
-- [ ] Order code in `Arduino` folder and in `catkin_ws/src` folder
-
+- [ ] Order code in `Arduino` folder 
+- [ ] order code in `catkin_ws/src` folder
 - [ ] Prepare blog posts
 
 ### ROS for Beginners II: Localization, Navigation and SLAM
 
-[Part 1](./udemy-ROS-essentials-course-notes/5.ROS-navigation-Jan21-Lessons-1-.md): Introduction
+[Part 1](./udemy-ROS-essentials-course-notes/5.ROS-navigation-Intro-Jan21-L001-035.md): Introduction: Lessons #001 to #035
+
+[Part 2](./udemy-ROS-essentials-course-notes/6.ROS-navigation-TF-Jan21-L036-0XX.md): TF: Lessons #0036 onwards
+
+### TO DO Course 2 as of 16.01
+
+To complete Section 6:
+
+- [ ] Lessons 050-051
+- [ ] Review whole chapter slowly
+- [ ] Finish Mini Pupper example
+
+Additionally:
+
+- [ ] Section 7
+- [ ] Section 8
+- [ ] Section 9
+- [ ] Assignment 2
