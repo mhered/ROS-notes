@@ -12,20 +12,30 @@ Loosely based on the Udemy ROS for Beginners courses by [Anis Koubaa](https://ww
 
 ### ROS for Beginners I: Course structure
 
-[Part 1](./udemy-ROS-essentials-course-notes/1.ROS-essentials-Nov21-Lessons-1-77.md): ROS basics L#001-#081, Assignments 1-4 
+[Part 1](./ROS-notes/1.ROS-essentials-Nov21-Lessons-1-77.md): ROS basics L#001-#081
 
-[Part 2](./udemy-ROS-essentials-course-notes/2.ROS-essentials-Motion-Nov21-L82-112.md): Motion with ROS L#082-#113, Assignment 5
+* [Assignment 1](./ROS-notes/ROS_Assignment_1.md)
+* [Assignment 2](./ROS-notes/ROS_Assignment_2.md)
+* Assignment 3
+* [Assignment 4](./ROS-notes/ROS_Assignment_4.md)
 
-[Part 3](./udemy-ROS-essentials-course-notes/3.ROS-essentials-Perception-Dec21-L114.138.md): Perception: Computer vision with OpenCV and laser scanners L#114-#139, Assignments 6-7 
+[Part 2](./ROS-notes/2.ROS-essentials-Motion-Nov21-L82-112.md): Motion with ROS L#082-#113
 
-[Part 4](./udemy-ROS-essentials-course-notes/4.ROS-essentials-rosserial-Dec21.md): Arduino bots and sensors with ROS L#140-150
+* [Assignment 5](./ROS-notes/ROS_Assignment_5.md)
+
+[Part 3](./ROS-notes/3.ROS-essentials-Perception-Dec21-L114.138.md): Perception: Computer vision with OpenCV and laser scanners L#114-#139
+
+* [Assignment 6](./ROS-notes/ROS_Assignment_6.md)
+* [Assignment 7](./ROS-notes/ROS_Assignment_7.md)
+
+[Part 4](./ROS-notes/4.ROS-essentials-rosserial-Dec21.md): Arduino bots and sensors with ROS L#140-150
 
 ### TO DO Course 1 as of 09.01
 
 - [x] upload to github
 - [x] upload video Kinect
 - [x] Lessons #104-106 and **Assignment 5** on cleaning app (already done, pending submission)
-- [ ] Lesson #107 on Turtlebot 2
+- [x] Lesson #107 on Turtlebot 2
 - [ ] Lesson #108 on ROS network config. See also #27 and #28 on virtual machines
 - [x] Lessons #109 and #110 ROS launch files with includes and parameters 
 - [ ] **Assignment 7** on obstacle avoidance in Turtlebot3 simulator
@@ -35,9 +45,9 @@ Loosely based on the Udemy ROS for Beginners courses by [Anis Koubaa](https://ww
 
 ### ROS for Beginners II: Localization, Navigation and SLAM
 
-[Part 1](./udemy-ROS-essentials-course-notes/5.ROS-navigation-Intro-Jan21-L001-035.md): Introduction: Lessons #001 to #035
+[Part 1](./ROS-notes/5.ROS-navigation-Intro-Jan21-L001-035.md): Introduction: Lessons #001 to #035
 
-[Part 2](./udemy-ROS-essentials-course-notes/6.ROS-navigation-TF-Jan21-L036-0XX.md): TF: Lessons #0036 onwards
+[Part 2](./ROS-notes/6.ROS-navigation-TF-Jan21-L036-0XX.md): TF: Lessons #0036 onwards
 
 ### TO DO Course 2 as of 16.01
 
