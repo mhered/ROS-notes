@@ -24,7 +24,8 @@ Loosely based on the Udemy ROS for Beginners courses by [Anis Koubaa](https://ww
 
 - [x] upload to github
 - [x] upload video Kinect
-- [ ] Lessons #104-107 and **Assignment 5** on cleaning app (already done, pending submission)
+- [x] Lessons #104-106 and **Assignment 5** on cleaning app (already done, pending submission)
+- [ ] Lesson #107 on Turtlebot 2
 - [ ] Lesson #108 on ROS network config. See also #27 and #28 on virtual machines
 - [x] Lessons #109 and #110 ROS launch files with includes and parameters 
 - [ ] **Assignment 7** on obstacle avoidance in Turtlebot3 simulator

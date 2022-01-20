@@ -16,3 +16,17 @@ Submit a zip folder containing:
 2. `clean_py.launch`, a launch file that starts the `turtlesim` node and the `clean.py` script both together
 
 Submission: [ZIP file](./assets/sources/clean.zip)
+
+## Potential Improvements 
+
+- [ ] command to abort cleaning and resume
+- [ ] rename parameters to specify angles are in degrees
+
+
+
+Remember convention: 
+
+clockwise = to the right = positive angle
+
+anticlockwise = to the left = negative angle
+
