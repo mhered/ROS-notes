@@ -1,0 +1,10 @@
+<launch>
+	<node pkg="turtlesim" type="turtlesim_node" name="mh_turtle_node" />
+
+    <param name ="WAIT" value="0.1"/>
+	<param name ="LIN_SPEED" value="6.0"/>
+	<param name ="ROT_SPEED" value="120.0"/>
+
+	<node pkg="mhered" type="clean.py"
+		name="mh_cleaner" output = "screen"/>
+</launch>
