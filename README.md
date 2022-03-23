@@ -54,7 +54,7 @@ Loosely based on the Udemy ROS for Beginners courses by [Anis Koubaa](https://ww
 To complete Section 6:
 
 - [ ] Lessons 050-051
-- [ ] Review whole chapter slowly
+- [x] Review whole chapter slowly
 - [ ] Finish Mini Pupper example
 
 Additionally:
