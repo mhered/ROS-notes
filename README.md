@@ -41,21 +41,25 @@ Loosely based on the Udemy ROS for Beginners courses by [Anis Koubaa](https://ww
 - [ ] **Assignment 7** on obstacle avoidance in Turtlebot3 simulator
 - [ ] Order code in `Arduino` folder 
 - [ ] order code in `catkin_ws/src` folder
-- [ ] Prepare blog posts
+- [x] Prepare blog posts
 
 ### ROS for Beginners II: Localization, Navigation and SLAM
 
-[Part 1](./ROS-notes/5.ROS-navigation-Intro-Jan21-L001-035.md): Introduction: Lessons #001 to #035
+[Part 1](./ROS-notes/5.ROS-navigation-Intro-Jan22-L001-035.md): Introduction: Lessons #001 to #035
 
-[Part 2](./ROS-notes/6.ROS-navigation-TF-Jan21-L036-0XX.md): TF: Lessons #0036 onwards
+[Part 2](./ROS-notes/6.ROS-navigation-TF-Jan22-L036-051.md): TF: Lessons #036 to #051 + MiniPupper example
+
+[Part 3](./ROS-notes/7.ROS-navigation-maps-Apr22-L052-0XX.md): maps: Lessons #052 onwards
+
+
 
 ### TO DO Course 2 as of 16.01
 
 To complete Section 6:
 
-- [ ] Lessons 050-051
+- [x] Lessons 050-051
 - [x] Review whole chapter slowly
-- [ ] Finish Mini Pupper example
+- [x] Finish Mini Pupper example
 
 Additionally:
 
