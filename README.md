@@ -51,15 +51,15 @@ Other ROS resources to check:
 
 ### ROS for Beginners II: Localization, Navigation and SLAM
 
-[Part 1](./ROS-notes/5.ROS-navigation-Intro-Jan22-L001-035.md): Introduction: Lessons #001 to #035
+[Part 5](./ROS-notes/5.ROS-navigation-Intro-Jan22-L001-035.md): Introduction: Lessons #001 to #035
 
-[Part 2](./ROS-notes/6.ROS-navigation-TF-Jan22-L036-051.md): TF: Lessons #036 to #051 + MiniPupper example
+[Part 6](./ROS-notes/6.ROS-navigation-TF-Jan22-L036-051.md): TF: Lessons #036 to #051 + MiniPupper example
 
-[Part 3](./ROS-notes/7.ROS-navigation-maps-Apr22-L052-0XX.md): maps: Lessons #052 onwards
+[Part 7](./ROS-notes/7.ROS-navigation-maps-Apr22-L052-062.md): maps: Lessons #052 to #62
 
+[Part 8](./ROS-notes/8.ROS-navigation-tuning-Jul22-L063-0XX.md): navigation parameter tuning: Lessons #063 onwards
 
-
-### TO DO Course 2 as of 16.01
+### TO DO Course 2 as of 27.07:
 
 To complete Section 6:
 
@@ -67,9 +67,10 @@ To complete Section 6:
 - [x] Review whole chapter slowly
 - [x] Finish Mini Pupper example
 
+- [x] Section 7
+
 Additionally:
 
-- [ ] Section 7
 - [ ] Section 8
 - [ ] Section 9
 - [ ] Assignment 2
