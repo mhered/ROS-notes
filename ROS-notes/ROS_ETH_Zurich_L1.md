@@ -1,4 +1,4 @@
-# ROS course
+# Lesson #1
 
 
 
@@ -21,17 +21,19 @@ ROS (Robot Operating System) is the de facto standard for robot programming, is 
 4. Lightweight: existing standalone libraries in thin ROS wrapper 
 5. Free and open source
 
-## ROS workspace environment
+## ROS elements
 
-workspace environment defines context for current workspace
+### ROS workspace environment
 
-load default workspace with 
+Workspace environment defines context for current workspace
+
+Load default workspace with 
 
 ```bash
 $ source /opt/ros/noetic/setup.bash
 ```
 
-overlay your catkin workspace with 
+Overlay your catkin workspace with 
 
 ```bash
 $ cd ~/catkin_ws
@@ -44,79 +46,214 @@ check current workspace with
 $ echo $ROS_PACKAGE_PATH
 ```
 
-see setup
+See setup
 
 ```bash
 $ cat ~/.bashrc
 ```
 
-## ROS master
+### ROS master
 
-Manages communication between nodes, every node registers at startup with the master.
-
-start a master with 
+ [ROS master](https://wiki.ros.org/Master) is a special node that manages communication between nodes, every node registers at startup. Launched - among other elements - with: 
 
 ```bash
 $ roscore
 ```
 
-## ROS nodes
+### ROS nodes
 
-nodes is the ROS name for the single-purpose programs, individually compiled, executed and managed and organized in packages that make your robot programming 
+[ROS nodes]() are the single-purpose individual programs that make your robot programming. They are managed individually and organized in packages. 
 
-run a node with 
+Execute a node:
 
 ```bash
-$ rosrun package_name node_name
+$ rosrun pkg_name node_name
 ```
 
- see list of active nodes with 
+List active nodes:
 
 ```bash
 $ rosnode list
 ```
 
-get info on node with 
+Show info on a node:
 
 ```bash
 $ rosnode info node_name
 ```
 
-## ROS topics
+### ROS topics
 
-nodes communicates over topics (aka streams of messages).  Nodes can publish and/or subscribe to topics - typically there is one publisher and n subscribers.
+Once nodes register to master they can communicate over [ROS topics](https://wiki.ros.org/rostopic). Topics are names for streams of messages.
 
-list of active topics with 
+Nodes can publish or subscribe (listen) to topics - typically 1 to many
+
+List active topics:
 
 ```bash
 $ rostopic list
 ```
 
-subscribe to and print the contents of a topic with 
+Subscribe to topic and show contents on the console
 
 ```bash
 $ rostopic echo /topic
 ```
 
-get info about a topic with 
+Analyze the frequency:
+
+```bash
+$ rostopic hz /topic
+```
+
+Show info on a topic:
 
 ```bash
 $ rostopic info /topic
 ```
 
-## ROS messages
+### ROS messages
 
-Message structure and format is defined in a text file with .msg extension. Contains arrays of type int, float, string etc and can be nested (one message can contain a message)
+[ROS messages](https://wiki.ros.org/Messages) structure and format is defined in a text file with `.msg` extension. Contains arrays of type `int`, `float`, `string` etc and can be nested (messages can contain other messages)  
 
-see the type of a topic with
+See the type of a topic
 
 ```bash
 $ rostopic type /topic
 ```
 
-publish a message to a topic with (TAB for autocomplete)
+Manually publish a message to a topic (TAB for autocomplete)
 
 ```bash
 $ rostopic pub /topic type args
 ```
 
+## The `catkin build` system
+
+Command to generate executables, libraries a interfaces: if you see in a tutorial `catkin_make` use instead `catkin build` . Note: Build packages from your catkin workspace and **then** always re-source to update the environment and ensure the system is aware of the changes:
+
+```bash
+$ cd ~/catkin_ws
+$ catkin build pkg_name
+$ source devel/setup.bash
+```
+
+This creates `src` folder for source code, `build` for cache and `devel` for built targets. Do not touch the last two. You can wipe them to start anew with: 
+
+```bash
+$ catkin clean
+```
+
+
+
+Note: Initially `catkin build` didn't work in my install but following [these instructions](https://stackoverflow.com/a/66142177/15472802) I installed a missing package:
+
+```bash
+$ sudo apt install python3-catkin-tools python3-osrf-pycommon
+```
+
+ Then deleted `devel` and `build` folders, run again and re-sourced environment et voilá.
+
+## The good way of getting code from internet
+
+This is cleaner when later you will have multiple `catkin_ws`
+
+1. clone the repo to a `~/git` folder
+
+```bash
+$ cd ~/git
+$ git clone https://github.com/ethz-asl/ros_best_practices
+```
+
+2. Symlink it to `catkin_ws`
+
+```bash
+$ ln -s ~/git/ros_best_practices/ ~/catkin_ws/src/
+```
+
+3. Build it and re-source environment
+
+```bash
+$ catkin build ros_package_template
+$ source devel/setup.bash
+```
+
+4. execute it:
+
+```bash
+$ roslaunch ros_package_template ros_package_template.launch
+```
+
+## ROS launch
+
+tool to launch several nodes at the same time. Launches `roscore` if not yet running. Described in XML `.launch` files. If in a package it will find it for you - dont need to be at the path. 
+
+```bash
+$ roslaunch pkg_name file_name.launch
+```
+
+Take a look at the file:
+
+```xml
+<launch>
+  <node name="listener" pkg="roscpp_tutorials" type="listener" output="screen"/>
+  <node name="talker" pkg="roscpp_tutorials" type="talker" output="screen"/>
+</launch>
+```
+
+- `<launch>`: root element of the file
+
+- `<node>`: a node to launch
+  - `name`: name of the instance of node, free to choose
+  - `pkg`: package
+  - `type`: node executable
+  - `output`:  where to write log messages, `screen` to console `log` to file
+- `<arg>`: arguments
+  - `ǹame`: name
+  - `default`: default value if not passed
+  - Are passed at launch with: `$ roslaunch launchfile.launch arg_name:=value`
+  - Value can be accessed in launch file with `$(arg arg_name)`
+- `<group if="condition">`: conditional loop
+- `<ìnclude file ="pkg_name" />`: nest launch files
+  - `$(find pkg_name)`: don't use absolute path but relative to packages, use this to find the system path to a package
+  - `<arg name="arg_name" value="value"/>`: pass down arguments to nested file 
+
+Note syntax of self-closing tags are <tag/> 
+
+## Gazebo simulator
+
+simulate 3D rigid body dynamics, sensors including noise, 3D visualization, interactive dropping elements etc. Tree with objects. Can start, pause, accelerate simu. Has gallery of robots and environments. Its a standalone program but has a ROS interface. 
+
+Run it with :
+
+```bash
+$ rosrun gazebo_ros gazebo
+```
+
+End of Lesson #1
+
+# Exercise #1
+
+1. set up Husky simulation:
+
+http://wiki.ros.org/husky_gazebo/Tutorials/Simulating%20Husky
+
+2. launch it and inspect it
+
+```bash
+$ rosnode list
+$ rostopic list
+$ rostopic echo /topic
+$ rostopic hz /topic
+$ rqt_graph
+```
+
+3. command a desired velocity:
+
+```
+$ rostopic pub /topic
+```
+
+4. find online  `teleop_twist_keyboard`, clone it, compile from source (40%)
+
+5. write a launch file to launch simulation in a different world with teleop node and drive Husky (60%)
