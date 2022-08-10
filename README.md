@@ -64,8 +64,11 @@ Udemy ROS for Beginners course by [Anis Koubaa](https://www.udemy.com/user/anis-
 [Programming for Robotics (ROS) Course playlist](https://www.youtube.com/playlist?list=PLE-BQwvVGf8HOvwXPgtDfWoxd4Cc6ghiP): ETH Zurich Course, 7 lessons. Watched only part of first lesson, but looks great. Course material (lessons, exercises for 2021 available to download: https://rsl.ethz.ch/education-students/lectures/ros.html#course_material
 
 * [Lesson #1](./ROS-notes/ROS_ETH_Zurich_L1.md)
+* [Lesson #2](./ROS-notes/ROS_ETH_Zurich_L2.md)
+* 
 
 
 ## Other ROS resources to check:
+* [Articulated Robotics](https://articulatedrobotics.xyz/) a phenomenal series of blog and video tutorials by Josh Newans including a step by step guide to building your own ROS2-based mobile robot with camera and LIDAR.
 * [ROS robotics learning website](https://www.rosroboticslearning.com/) , [youtube video of DIY Jetson nano+ RPLidar robot](https://www.youtube.com/watch?v=Uz_i_sjVhIM) and [github repo](https://github.com/bandasaikrishna/Autonomous_Mobile_Robot)
 * [JdeRobot robotics education website](https://jderobot.github.io/projects/robotics_education/) and [Robotics-Academy exercises](https://jderobot.github.io/RoboticsAcademy/exercises/)
