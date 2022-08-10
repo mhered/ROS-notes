@@ -1,3 +1,7 @@
+---
+typora-copy-images-to: assets/images
+---
+
 # Lesson #1
 
 
@@ -297,7 +301,7 @@ $ rosrun teleop_twist_keyboard teleop_twist_keyboard.py
 <launch>
     <node name="teleop" pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" output="screen"/>
     <include file ="$(find husky_gazebo)/launch/husky_empty_world.launch" >
-        <arg name="world_name" value="worlds/willowgarage.world" />
+        <arg name="world_name" value="worlds/robocup14_spl_field.world" />
     </include>
 </launch>
 ```
@@ -308,3 +312,4 @@ Executed with:
 $ roslaunch src/my_husky.launch
 ```
 
+![husky](assets/images/husky.gif)
