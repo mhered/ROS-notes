@@ -234,7 +234,7 @@ End of Lesson #1
 
 # Exercise #1
 
-1. set up Husky simulation:
+1. set up the Husky simulation:
 
 http://wiki.ros.org/husky_gazebo/Tutorials/Simulating%20Husky
 
@@ -250,10 +250,61 @@ $ rqt_graph
 
 3. command a desired velocity:
 
-```
-$ rostopic pub /topic
+```bash
+ $ rostopic pub /cmd_vel geometry_msgs/Twist "linear:
+  x: 5.0
+  y: 0.0
+  z: 0.0
+angular:
+  x: 0.0
+  y: 0.0
+  z: 0.0"
 ```
 
 4. find online  `teleop_twist_keyboard`, clone it, compile from source (40%)
 
+http://wiki.ros.org/teleop_twist_keyboard
+
+```bash
+$ cd ~/git
+$ git clone https://github.com/ros-teleop/teleop_twist_keyboard.git # clone
+$ ln -s ~/git/teleop_twist_keyboard/ ~/catkin_ws/src/ 			# symlink
+$ catkin build teleop_twist_keyboard 							# compile from source
+$ source devel/setup.bash 										# source environment
+$ rosrun teleop_twist_keyboard teleop_twist_keyboard.py			# execute
+Moving around:
+   u    i    o
+   j    k    l
+   m    ,    .
+$ roscd teleop_twist_keyboard									# check
+$ pwd
+~/catkin_ws/src/teleop_twist_keyboard							# ok!
+
+```
+
 5. write a launch file to launch simulation in a different world with teleop node and drive Husky (60%)
+
+Launch file should replicate:
+
+```bash
+$ roslaunch husky_gazebo husky_empty_world.launch world_name:=worlds/willowgarage.world
+$ rosrun teleop_twist_keyboard teleop_twist_keyboard.py
+```
+
+`my_husky.launch`:
+
+```xml
+<launch>
+    <node name="teleop" pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" output="screen"/>
+    <include file ="$(find husky_gazebo)/launch/husky_empty_world.launch" >
+        <arg name="world_name" value="worlds/willowgarage.world" />
+    </include>
+</launch>
+```
+
+Executed with:
+
+```bash
+$ roslaunch src/my_husky.launch
+```
+
