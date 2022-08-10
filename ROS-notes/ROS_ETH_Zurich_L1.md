@@ -134,7 +134,9 @@ $ rostopic pub /topic type args
 
 ## The `catkin build` system
 
-Command to generate executables, libraries a interfaces: if you see in a tutorial `catkin_make` use instead `catkin build` . Note: Build packages from your catkin workspace and **then** always re-source to update the environment and ensure the system is aware of the changes:
+Command to generate executables, libraries a interfaces: if you see in a tutorial `catkin_make` use instead `catkin build`. See [here](https://robotics.stackexchange.com/questions/16604/ros-catkin-make-vs-catkin-build) why `catkin build` is better than `catkin_make` and [here]() the official documentation of the `catkin_tools` package.
+
+Note: Build packages from your catkin workspace and **then** always re-source to update the environment and ensure the system is aware of the changes:
 
 ```bash
 $ cd ~/catkin_ws
@@ -147,8 +149,6 @@ This creates `src` folder for source code, `build` for cache and `devel` for bui
 ```bash
 $ catkin clean
 ```
-
-
 
 Note: Initially `catkin build` didn't work in my install but following [these instructions](https://stackoverflow.com/a/66142177/15472802) I installed a missing package:
 
