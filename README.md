@@ -27,7 +27,7 @@ Udemy ROS for Beginners course by [Anis Koubaa](https://www.udemy.com/user/anis-
 
 [Part 4](./ROS-notes/4.ROS-essentials-rosserial-Dec21.md): Arduino bots and sensors with ROS L#140-150
 
-### TO DO Course 1 as of 09.01
+### TO DO on ROS for Beginners I as of 09.01
 
 - [x] upload to github
 - [x] upload video Kinect
@@ -51,14 +51,16 @@ Udemy ROS for Beginners course by [Anis Koubaa](https://www.udemy.com/user/anis-
 
 [Part 6](./ROS-notes/6.ROS-navigation-TF-Jan22-L036-051.md): TF: Lessons #036 to #051 + MiniPupper example
 
-[Part 7](./ROS-notes/7.ROS-navigation-maps-Apr22-L052-062.md): maps: Lessons #052 to #62
+[Part 7](./ROS-notes/7.ROS-navigation-maps-Apr22-L052-062.md): maps: Lessons #052 to #062
 
-[Part 8](./ROS-notes/8.ROS-navigation-tuning-Jul22-L063-0XX.md): navigation parameter tuning: Lessons #063 onwards
+[Part 8](./ROS-notes/8.ROS-navigation-tuning-Jul22-L063-070.md): navigation parameter tuning: Lessons #063 to #070
 
-### TO DO Course 2 as of 09.08.22:
+[Part 9](./ROS-notes/9.ROS-navigation-reactive-Aug22-L071-076.md): reactive navigation: Lessons #071 to #076
 
-- [ ] Section 9
-- [ ] Assignment 2
+### TO DO on ROS for Beginners II as of 09.08.22:
+
+- [ ] **Section 9**
+- [ ] **Assignment 2**
 
 ##  ETH Zurich Programming for Robotics (ROS) Course
 [Programming for Robotics (ROS) Course playlist](https://www.youtube.com/playlist?list=PLE-BQwvVGf8HOvwXPgtDfWoxd4Cc6ghiP): ETH Zurich Course, 7 lessons. Watched only part of first lesson, but looks great. Course material (lessons, exercises for 2021 available to download: https://rsl.ethz.ch/education-students/lectures/ros.html#course_material
