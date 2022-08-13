@@ -1,0 +1,27 @@
+<launch>
+
+    <!-- launch turtlesim simulator node -->
+    <!-- does this spawn the leader turtle and call it turtle1?? -->
+    <!-- How do I assign teleop to it and not to follower?? -->
+
+    <node pkg="turtlesim" type="turtlesim_node" name="sim"/>
+
+    <!-- launch teleop node -->
+    <node pkg="turtlesim" type="turtle_teleop_key" name="teleop" output="screen"/>
+
+    <!-- launch a tf broadcaster for the leader turtle -->
+    <node pkg="mhered" type="tf_broadcaster.py" name="turtle_leader_tf_broadcaster"
+        respawn="false" output="screen">
+        <param name="turtle" type="string" value="turtle_leader" />
+    </node>
+
+    <!-- launch a tf broadcaster for the follower turtle -->
+    <node pkg="mhered" type="tf_broadcaster.py" name="turtle_follower_tf_broadcaster"
+        respawn="false" output="screen">
+        <param name="turtle" type="string" value="turtle_follower" />
+    </node>
+
+    <!-- launch listener node -->
+    <node pkg="mhered" type="tf_listener.py" name="listener"/>
+
+</launch>
