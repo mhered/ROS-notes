@@ -39,3 +39,28 @@ The objective of this second assignment is to develop a Proportional  controller
 **The Move-Stop-Rotate Behavior for Obstacle Avoidance**
 
 **A PID Controller**
+
+----
+
+15/08/22
+
+* create `bumper.launch` to  launch environment: turtlebot3, rviz, teleop, and scan_subscriber
+
+* fix `scan_subscriber.py` : sort data to plot `/scan` in -180 180 degree range and fix bug with shallow copy of `clean_ydata`
+
+* start 2 more files (unreleased, WIP)
+
+``` 
+src/mhered/src/utils.py # sandbox to slice and sort the angles and ranges
+src/mhered/src/dist_to_obstacle.py # scan subscriber to calculate distance to object
+```
+
+Next steps:
+
+- [ ] modify `dist_to_obstacle.py` to get distance to object in beam +/-X degrees, dealing with NaN
+- [ ] send cmd_vel commands
+- [ ] implement straight to goal
+- [ ] implement main loop that checks condition to stop when obstacle
+- [ ] implement rotate to find clear direction 
+- [ ] test
+- [ ] implement PID
