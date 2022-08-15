@@ -1,0 +1,27 @@
+<launch>
+
+    <arg name="open_rviz" default="true"/>
+
+    <!-- launch turtlesim3 simulator in maze environment -->
+    <!-- roslaunch turtlebot3_gazebo turtlebot3_world.launch -->
+
+    <!-- TurtleBot3 -->
+    <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_world.launch"/>
+
+    <!-- launch rviz for visualization -->
+    <!-- roslaunch turtlebot3_gazebo turtlebot3_gazebo_rviz.launch -->
+    <group if="$(arg open_rviz)">
+      <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_gazebo_rviz.launch"/>
+    </group>
+
+    <!-- set Size (m) attribute to 0.04, color to Green How? -->
+
+    <!-- launch teleop node -->
+    <!-- roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch -->
+    <include file="$(find turtlebot3_teleop)/launch/turtlebot3_teleop_key.launch"/>
+
+    <!-- launch the scan subscriber -->
+    <node pkg="mhered" type="scan_subscriber.py" name="scan_subscriber" output="screen" />
+
+
+</launch>
