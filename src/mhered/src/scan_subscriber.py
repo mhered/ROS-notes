@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import rospy
 from sensor_msgs.msg import LaserScan
@@ -37,9 +37,22 @@ def scan_callback(message):
 
     global axes, line
 
-    ydata = np.asarray(message.ranges)
-    xdata = 180/np.pi*(message.angle_min +
-                       message.angle_increment * np.asarray(range(len(ydata))))
+    ranges = np.asarray(message.ranges)
+    angles = 180/np.pi*(message.angle_min +
+                        message.angle_increment * np.asarray(
+                            range(len(ranges))))
+
+    # this to shift angles >180 from [180 - 360) to [-180, 0)
+    # angles = np.array(angles)
+
+    angles_shifted = np.where(angles > 180, angles-360, angles)
+
+    angles_indeces = angles_shifted.argsort()
+    angles_sorted = angles_shifted[angles_indeces[::-1]]
+    ranges_sorted = ranges[angles_indeces[::-1]]
+
+    xdata = angles_sorted
+    ydata = ranges_sorted
 
     # update plot
     line.set_data(xdata, ydata)
@@ -48,8 +61,9 @@ def scan_callback(message):
     margin = 0.05
     axes.set_xlim(min(xdata)*(1-margin), max(xdata)*(1+margin))
     # remove Inf and NaN values from ydata to compute axes limits
-    clean_ydata = ydata
-    clean_ydata[~np.isfinite(clean_ydata)] = 0
+    # deep copy to avoid modifying ydata
+    clean_ydata = ydata.copy()
+    clean_ydata[~np.isfinite(clean_ydata)] = message.range_max
     axes.set_ylim(min(clean_ydata)*(1-margin), max(clean_ydata)*(1+margin))
 
 
