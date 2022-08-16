@@ -23,5 +23,8 @@
     <!-- launch the scan subscriber -->
     <node pkg="mhered" type="scan_subscriber.py" name="scan_subscriber" output="screen" />
 
+    <!-- launch the bumper program -->
+    <!-- node pkg="mhered" type="bumper_app.py" name="bumper_app" output="screen" /> -->
+
 
 </launch>
