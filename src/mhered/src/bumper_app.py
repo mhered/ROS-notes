@@ -2,7 +2,9 @@
 
 import rospy
 from geometry_msgs.msg import Twist
-from turtlesim.msg import Pose
+from nav_msgs.msg import Odometry
+from tf.transformations import euler_from_quaternion, quaternion_from_euler
+
 
 import math
 import time
@@ -14,12 +16,39 @@ y = 0.0
 yaw = 0.0
 
 
-def pose_callback(pose_message):
+def odom_callback(odom_message):
     """ Pose callback method """
     global x, y, yaw
-    x = pose_message.x
-    y = pose_message.y
-    yaw = pose_message.theta
+    x = odom_message.pose.pose.position.x
+    y = odom_message.pose.pose.position.y
+    q = odom_message.pose.pose.orientation
+    q_as_list = [q.x, q.y, q.z, q.w]
+    (roll, pitch, yaw) = euler_from_quaternion(q_as_list)
+
+    """
+    /odom nav_msgs/Odometry
+    header:
+        seq: 0
+        stamp:
+            secs: 0
+            nsecs: 0
+        frame_id: ''
+        child_frame_id: ''
+    pose:
+        pose:
+            position: {x: 0.0, y: 0.0, z: 0.0}
+            orientation: {x: 0.0, y: 0.0, z: 0.0, w: 0.0}
+        covariance: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    twist:
+        twist:
+            linear: {x: 0.0, y: 0.0, z: 0.0}
+            angular: {x: 0.0, y: 0.0, z: 0.0}
+        covariance: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0]"
+    """
 
 
 def move(velocity_publisher, speed, distance, is_forward):
@@ -229,15 +258,17 @@ def bumper_app(velocity_publisher, WAIT, LIN_SPEED, ROT_SPEED):
 
 if __name__ == '__main__':
     try:
-        rospy.init_node('my_turtle_pose_node', anonymous=True)
+
+        # declare the node
+        rospy.init_node('bumper_node', anonymous=True)
 
         # declare velocity publisher
-        cmd_vel_topic = '/turtle1/cmd_vel'
+        cmd_vel_topic = '/cmd_vel'
         velocity_publisher = rospy.Publisher(cmd_vel_topic, Twist, queue_size=10)
 
-        # declare pose subscriber
-        pose_topic = "/turtle1/pose"
-        pose_subscriber = rospy.Subscriber(pose_topic, Pose, pose_callback)
+        # declare odom subscriber
+        odom_topic = "/odom"
+        odom_subscriber = rospy.Subscriber(odom_topic, Odometry, odom_callback)
 
         time.sleep(1)
 
@@ -247,7 +278,7 @@ if __name__ == '__main__':
         ROT_SPEED = rospy.get_param("ROT_SPEED", 30.0)
 
         # call the function
-        cleaner_app(velocity_publisher, WAIT, LIN_SPEED, ROT_SPEED)
+        bumper_app(velocity_publisher, WAIT, LIN_SPEED, ROT_SPEED)
 
         print('start reset: ')
         time.sleep(5)
