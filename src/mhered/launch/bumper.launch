@@ -2,10 +2,11 @@
 
     <arg name="open_rviz" default="false"/>
     <arg name="show_laser" default="false"/>
+    <arg name="world" default="world"/>
 
     <!-- launch TurtleBot3 simulator in maze environment -->
     <!-- i.e. roslaunch turtlebot3_gazebo turtlebot3_world.launch -->
-    <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_world.launch"/>
+    <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_$(arg world).launch"/>
 
     <!-- launch RVIZ for visualization -->
     <!-- i.e.roslaunch turtlebot3_gazebo turtlebot3_gazebo_rviz.launch -->
