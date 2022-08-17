@@ -100,12 +100,13 @@ def move_fwd(velocity_publisher, speed):
         loop_rate.sleep()
 
         distance_moved = abs(math.sqrt(((x-x0) ** 2) + ((y-y0) ** 2)))
-        print(f"Distance moved: {distance_moved:10.4} Pose: ({x:8.4}, {y:8.4}, {yaw:8.4})")
+        print(
+            f"** Moving fwd: {distance_moved:6.4}m     Pose: {x:6.4}m, {y:6.4}m, {math.degrees(yaw):6.4}deg")
         if fwd_clearance < SAFETY_DIST:
-            rospy.loginfo("Obstacle reached")
+            rospy.loginfo("** Obstacle reached")
             break
 
-    rospy.loginfo("Stopping")
+    rospy.loginfo("** Stopping")
     # stop the robot when obstacle is reached
     velocity_message.linear.x = 0.0
     velocity_publisher.publish(velocity_message)
@@ -137,15 +138,16 @@ def rotate_in_place(velocity_publisher, omega_degrees):
         curr_yaw_degrees = (t1-t0)*omega_degrees
         loop_rate.sleep()
 
-        print(f"Angle rotated: {curr_yaw_degrees:10.4} Pose: ({x:8.4}, {y:8.4}, {yaw:8.4})")
+        print(
+            f"** Rotating: {curr_yaw_degrees:6.4}deg    Pose: ({x:6.4}m, {y:6.4}m, {math.degrees(yaw):6.4}deg)")
         if fwd_clearance > MIN_CLEARANCE:
-            rospy.loginfo("Angle reached")
+            rospy.loginfo("** Found clearance")
             break
 
     # stop the robot after the angle is reached
     velocity_message.angular.z = 0.0
     velocity_publisher.publish(velocity_message)
-    rospy.loginfo("Stopping rotation")
+    rospy.loginfo("** Stopping rotation")
 
 
 def bumper_app(velocity_publisher):
@@ -162,15 +164,17 @@ def bumper_app(velocity_publisher):
 
     while True:
         # Behavior 1: move fwd until blocked by obstacle
+        print("** BEHAVIOR 1: MOVING FORWARD\n\n")
         move_fwd(velocity_publisher=velocity_publisher,
                  speed=LIN_SPEED)
-        print("** Reached obstacle\n\n")
+        print("** REACHED OBSTACLE\n\n")
         time.sleep(WAIT)
 
         # Behavior 2: rotate until clearance found
+        print("** BEHAVIOR 2: ROTATING\n\n")
         rotate_in_place(velocity_publisher=velocity_publisher,
                         omega_degrees=ROT_SPEED)
-        print("** Found direction clear of obstacles\n\n")
+        print("** FOUND DIRECTION CLEAR FROM OBSTACLES\n\n")
         time.sleep(WAIT)
 
 

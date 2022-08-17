@@ -33,7 +33,7 @@ def scan_callback(message):
     formatted_time = datetime.datetime.fromtimestamp(time_in_secs).isoformat()
     formatted_msg = f"Scan received on {formatted_time}"
     # get_caller_id(): Get fully resolved name of local node
-    rospy.loginfo(rospy.get_caller_id() + "\n" + formatted_msg)
+    # rospy.loginfo(rospy.get_caller_id() + "\n" + formatted_msg)
 
     global axes, line
 
