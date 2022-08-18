@@ -1,0 +1,43 @@
+<launch>
+
+    <arg name="open_rviz" default="false"/>
+    <!-- options: true <false> -->
+
+    <arg name="plot_laser" default="false"/>
+    <!-- options: true <false> -->
+
+    <arg name="world" default="stage_4"/>
+    <!-- options: <stage_4> world house -->
+
+    <arg name="bug_behavior" default="bug0"/>
+    <!-- options: <0> 1 2 instructor student1 student2 -->
+
+    <!-- launch TurtleBot3 simulator in maze environment -->
+    <!-- i.e. roslaunch turtlebot3_gazebo turtlebot3_stage_4.launch -->
+    <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_$(arg world).launch"/>
+
+    <!-- launch RVIZ for visualization -->
+    <!-- i.e.roslaunch turtlebot3_gazebo turtlebot3_gazebo_rviz.launch -->
+    <group if="$(arg open_rviz)">
+        <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_gazebo_rviz.launch"/>
+    </group>
+
+    <!-- set Size (m) attribute to 0.04, color to Green How? -->
+
+    <!-- launch the scan subscriber to show a plot of the laser scan-->
+    <group if="$(arg plot_laser)">
+        <node pkg="mhered" type="scan_subscriber.py" name="scan_subscriber" output="screen" /> -->
+    </group>
+
+    <!-- launch teleop node -->
+    <!-- i.e roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch -->
+
+    <!--
+    <include file="$(find turtlebot3_teleop)/launch/turtlebot3_teleop_key.launch"/> 
+    -->
+
+    <!-- launch the bug robot -->
+    <node pkg="mhered" type="bug_$(arg bug_behavior).py" name="bug_$(arg bug_behavior)" output="screen" />
+
+
+</launch>

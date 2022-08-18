@@ -1,22 +1,11 @@
 #!/usr/bin/env python3
 
 """
-**Bouncy Robot**
-
-Assignment 2 Part 1: Move-Stop-Rotate Behavior for Obstacle Avoidance
-
-Loop:
-Behavior 1: Move the robot in a straight line until a laser beam of [-5,+5] deg
- around the centre line detects an obstacle closer than 0.6 m
-
-Behavior 2: Rotate the robot until the same laser beam detects no obstacles
- closer than 3m
-
-The robot should move forever without hitting obstacles.
-Tested on Turtlebot3 in the maze and house environments.
-
+** BUG0 stub methods**
+    Repeat:
+        * move straight towards the goal until obstacle detected
+        * follow obstacle boundary until no obstacle in direction of the goal
 """
-
 
 import rospy
 from geometry_msgs.msg import Twist
@@ -25,9 +14,9 @@ from tf.transformations import euler_from_quaternion
 import numpy as np
 from sensor_msgs.msg import LaserScan
 
-
 import math
 import time
+
 
 # use current location from the global variables
 # (constantly updated by odom_callback())
@@ -38,8 +27,10 @@ yaw = 0.0
 
 # use clearances from the global variables
 # (constantly updated by scan_callback())
-global fwd_clearance
+global fwd_clearance, left_clearance, right_clearance
 fwd_clearance = 0.0
+left_clearance = 0.0
+right_clearance = 0.0
 
 # get global params
 global LASER_RANGE, BEAM_ANGLE
@@ -67,7 +58,9 @@ def scan_callback(message):
     Constantly update global fwd_clearance from /scan sensor_msgs/LaserScan
     """
 
-    global fwd_clearance
+    # use clearances from the global variables
+    # (constantly updated by scan_callback())
+    global fwd_clearance, left_clearance, right_clearance
 
     # parameters
     global BEAM_ANGLE, LASER_RANGE
@@ -93,7 +86,25 @@ def scan_callback(message):
     fwd_ranges = [r for (a, r) in zip(
         angles_sorted, clean_ranges_sorted) if abs(a) < BEAM_ANGLE]
     fwd_clearance = min(fwd_ranges)
-    print(f"\nCLEARANCE FWD:  {fwd_clearance:8.4}\n")
+
+    right_ranges = [r for (a, r) in zip(
+        angles_sorted, clean_ranges_sorted) if (a > 30 and a < 100)]
+    right_clearance = min(right_ranges)
+
+    left_ranges = [r for (a, r) in zip(
+        angles_sorted, clean_ranges_sorted) if (a < -30 and a > -100)]
+    left_clearance = min(left_ranges)
+
+    print(
+        f"\nCLEARANCE FWD: {fwd_clearance:8.4}"
+        f" LEFT: {left_clearance:8.4}"
+        f" RIGHT: {right_clearance:8.4}\n")
+
+
+def robot_coordinates(x, y, x_robot, y_robot):
+    distance = math.sqrt((x-x_robot)**2 + (y - y_robot)**2)
+    direction = math.atan2((y-y_robot), (x-x_robot))
+    return distance, direction
 
 
 def move_fwd(velocity_publisher, speed):
@@ -103,8 +114,14 @@ def move_fwd(velocity_publisher, speed):
     velocity_message = Twist()
 
     # get current location from the global variable before entering the loop
-    global x, y, fwd_clearance
+    global x, y
+
+    # use clearances from the global variables
+    # (constantly updated by scan_callback())
+    global fwd_clearance, left_clearance, right_clearance
+
     global SAFETY_DIST, RATE
+
     # save initial coordinates
     x0 = x
     y0 = y
@@ -134,12 +151,26 @@ def move_fwd(velocity_publisher, speed):
     velocity_publisher.publish(velocity_message)
 
 
+def follow_wall(velocity_publisher, speed):
+    """ Follow wall method """
+
+    # declare a Twist message to send velocity commands
+    velocity_message = Twist()
+
+    # get current location from the global variable before entering the loop
+    global x, y, yawa
+
+    # use clearances from the global variables
+    # (constantly updated by scan_callback())
+    global fwd_clearance, left_clearance, right_clearance
+
+
 def rotate_in_place(velocity_publisher, omega_degrees):
     """ Rotation in place method """
 
     # use clearances from the global variables
     # (constantly updated by scan_callback())
-    global fwd_clearance
+    global fwd_clearance, left_clearance, right_clearance
 
     global RATE, MIN_CLEARANCE
     # declare a Twist message to send velocity commands
@@ -176,21 +207,29 @@ def rotate_in_place(velocity_publisher, omega_degrees):
     rospy.loginfo("** Stopping rotation")
 
 
-def bouncy_robot(velocity_publisher):
-    """ Bouncy robot """
+def bug0_robot(velocity_publisher, goal_x, goal_y):
+    """ BUG0 """
 
     # use current location from the global variables
     # (constantly updated by odom_callback())
     global x, y, yaw
 
-    # use clearances from the global variables
-    # (constantly updated by scan_callback())
     global fwd_clearance
 
     # get global params
     global LASER_RANGE, BEAM_ANGLE
     global ANGLE_TOL, SAFETY_DIST, MIN_CLEARANCE
     global WAIT, LIN_SPEED, ROT_SPEED, RATE
+
+    (goal_dist, goal_angle) = robot_coordinates(goal_x, goal_y, x, y)
+    print(f"** Goal at {goal_dist}(m), {goal_angle*180/math.pi}(deg)\n\n")
+    time.sleep(1)
+
+    # rotate until pointing to goal
+    while abs(yaw - goal_angle) > ANGLE_TOL:
+        rotate_in_place(ROT_SPEED)
+    print("** Pointing at goal\n\n")
+    time.sleep(1)
 
     while True:
         # Behavior 1: move fwd until blocked by obstacle
@@ -200,11 +239,11 @@ def bouncy_robot(velocity_publisher):
         print("** REACHED OBSTACLE\n\n")
         time.sleep(WAIT)
 
-        # Behavior 2: rotate until clearance found
-        print("** BEHAVIOR 2: ROTATING\n\n")
-        rotate_in_place(velocity_publisher=velocity_publisher,
-                        omega_degrees=ROT_SPEED)
-        print("** FOUND DIRECTION CLEAR FROM OBSTACLES\n\n")
+        # Behavior 2: follow wall until clearance found
+        print("** BEHAVIOR 2: FOLLOW WALL\n\n")
+        follow_wall(velocity_publisher=velocity_publisher,
+                    speed=LIN_SPEED)
+        print("** DIRECTION TO GOAL CLEAR FROM OBSTACLES\n\n")
         time.sleep(WAIT)
 
 
@@ -245,8 +284,11 @@ if __name__ == '__main__':
         ROT_SPEED = rospy.get_param("ROT_SPEED", 15.0)  # degrees/s
         RATE = rospy.get_param("RATE", 10.0)  # Hz
 
+        GOAL_X = rospy.get_param("GOAL_X", 1.0)  # m
+        GOAL_Y = rospy.get_param("GOAL_X", 2.0)  # m
+
         # launch the bouncy robot app
-        bouncy_robot(velocity_publisher)
+        bug0_robot(velocity_publisher, GOAL_X, GOAL_Y)
 
         rospy.spin()
 

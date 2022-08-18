@@ -23,7 +23,7 @@ Udemy ROS for Beginners course by [Anis Koubaa](https://www.udemy.com/user/anis-
 [Part 3](./ROS-notes/3.ROS-essentials-Perception-Dec21-L114.138.md): Perception: Computer vision with OpenCV and laser scanners L#114-#139
 
 * [Assignment 6](./ROS-notes/ROS_Assignment_6.md)
-* [Assignment 7](./ROS-notes/ROS_Assignment_7.md)
+* [Assignment 7](./ROS-notes/ROS_Assignment_7.md): **bouncy** and **marauder** obstacle avoidance with Turtlebot3
 
 [Part 4](./ROS-notes/4.ROS-essentials-rosserial-Dec21.md): Arduino bots and sensors with ROS L#140-150
 
@@ -47,7 +47,7 @@ Udemy ROS for Beginners course by [Anis Koubaa](https://www.udemy.com/user/anis-
 
 (Purchased on Udemy on 15.07 with username spam) 
 
-[Part 5](./ROS-notes/5.ROS-navigation-Intro-Jan22-L001-035.md): Introduction: Lessons #001 to #035
+[Part 5](./ROS-notes/5.ROS-navigation-Intro-Jan22-L001-035.md): Introduction: Lessons #001 to #035 and **Assignment 1** (Quiz)
 
 [Part 6](./ROS-notes/6.ROS-navigation-TF-Jan22-L036-051.md): TF: Lessons #036 to #051 + MiniPupper example
 
@@ -55,11 +55,11 @@ Udemy ROS for Beginners course by [Anis Koubaa](https://www.udemy.com/user/anis-
 
 [Part 8](./ROS-notes/8.ROS-navigation-tuning-Jul22-L063-070.md): navigation parameter tuning: Lessons #063 to #070
 
-[Part 9](./ROS-notes/9.ROS-navigation-reactive-Aug22-L071-076.md): reactive navigation: Lessons #071 to #076
+[Part 9](./ROS-notes/9.ROS-navigation-reactive-Aug22-L071-076.md): reactive navigation: Lessons #071 to #076 and **Assignment 2: BUG 0**
 
 ### TO DO on ROS for Beginners II as of 09.08.22:
 
-- [ ] **Section 9**
+- [x] **Section 9**
 - [ ] **Assignment 2**
 
 ##  ETH Zurich Programming for Robotics (ROS) Course
