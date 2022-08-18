@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+""" BUG0 stub methods """
+
 """
     BUG0
     Repeat:
@@ -8,8 +10,26 @@
 """
 
 
+
+
 import math
 import time
+def bug0():
+    """ Unfinished BUG0 """
+    # goal
+    goal_x = 10
+    goal_y = 10
+
+    (goal_dist, goal_angle) = robot_coordinates(goal_x, goal_y, x, y)
+    print(f"** Goal at {goal_dist}(m), {goal_angle*180/math.pi}(deg)\n\n")
+    time.sleep(1)
+
+    # rotate until pointing to goal
+    while abs(angle - goal_angle) > ANGLE_TOL:
+        rotate_in_place(OMEGA)
+    print("** Pointing at goal\n\n")
+    time.sleep(1)
+
 
 global x, y, angle
 
