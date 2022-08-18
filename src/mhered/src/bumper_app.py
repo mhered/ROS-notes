@@ -87,7 +87,7 @@ def scan_callback(message):
     fwd_ranges = [r for (a, r) in zip(
         angles_sorted, clean_ranges_sorted) if abs(a) < BEAM_ANGLE]
     fwd_clearance = min(fwd_ranges)
-    print(f"\nFWD CLEARANCE:  {fwd_clearance:8.4}\n")
+    print(f"\nCLEARANCE FWD:  {fwd_clearance:8.4}\n")
 
 
 def move_fwd(velocity_publisher, speed):
