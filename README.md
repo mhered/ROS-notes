@@ -35,7 +35,7 @@ Udemy ROS for Beginners course by [Anis Koubaa](https://www.udemy.com/user/anis-
 - [x] Lesson #107 on Turtlebot 2
 - [ ] Lesson #108 on ROS network config. See also #27 and #28 on virtual machines
 - [x] Lessons #109 and #110 ROS launch files with includes and parameters 
-- [ ] **Assignment 7** on obstacle avoidance in Turtlebot3 simulator
+- [x] **Assignment 7** on obstacle avoidance in Turtlebot3 simulator
 - [ ] Order code in `Arduino` folder 
 - [ ] order code in `catkin_ws/src` folder
 - [x] Prepare blog posts

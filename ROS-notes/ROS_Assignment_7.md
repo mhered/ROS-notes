@@ -1,6 +1,6 @@
 # Assignment 7
 
-#### The Move-Stop-Rotate Behavior for Obstacle Avoidance
+## The Move-Stop-Rotate Behavior for Obstacle Avoidance
 
 We will first start with a very simple program to make the robot move around 
 
@@ -14,7 +14,7 @@ We will first start with a very simple program to make the robot move around
 8. Make a loop to repeat these two functions and observe if the robot succeeds in moving without hitting the obstacle forever or not. 
 9. Try the same program in the house environment `roslaunch turtlebot3_gazebo turtlebot3_house.launch`. What are your observations?
 
-#### A PID Controller
+## A PID Controller
 
 The motion behavior in the previous solution is not smooth as there are several motions interrupted by a stop.
 
@@ -34,33 +34,47 @@ The objective of this second assignment is to develop a Proportional  controller
 
   
 
-#### Questions for this assignment
+## 15/08/22
 
-**The Move-Stop-Rotate Behavior for Obstacle Avoidance**
-
-**A PID Controller**
-
-----
-
-15/08/22
-
-* create `bumper.launch` to  launch environment: turtlebot3, rviz, teleop, and scan_subscriber
-
+* create `bumper.launch` to  launch environment: `turtlebot3`, `rviz`, `teleop`, and `scan_subscriber`
 * fix `scan_subscriber.py` : sort data to plot `/scan` in -180 180 degree range and fix bug with shallow copy of `clean_ydata`
 
-* start 2 more files (unreleased, WIP)
+## 16/08/22
 
-``` 
-src/mhered/src/utils.py # sandbox to slice and sort the angles and ranges
-src/mhered/src/dist_to_obstacle.py # scan subscriber to calculate distance to object
+* add `bumper_add.py` to implement the Move-Stop-Rotate Behavior for Obstacle Avoidance 
+* subscribe to `/odom`to get robot pose
+* subscribe to `/scan` get distance to object in beam +/-5 degrees, dealing with NaN - `global fwd_clearance`
+* publish `cmd_vel` commands to move the robot `global x, y, yaw`
+* Loop:
+  * behavior 1 - move straight to goal until obstacle closer than 0.6m
+  * behavior 2 - rotate until direction with clearance >3m found 
+
+## 17/08/22
+
+* test and fine-tune `bumper_app.py` in **maze** and **house** environments
+
+![bouncy_robot](assets/images/bouncy_robot.gif)
+
+* Add `smooth_bumper_app.py` with first implementation of the PID controller based on go-to-goal behavior
+
+## 18/08/22
+
+* Update and rename `bumper_app.py` to [`robot_bouncy.py`](../src/mhered/src/robot_bouncy.py) 
+* Update and rename `smooth_bumper_app.py` to [`robot_marauder.py`](../src/mhered/src/robot_marauder.py)
+* Eliminate `smooth_bumper.launch`
+* Rename `bumper.launch` to [`robot.launch`](../src/mhered/launch/robot.launch) and modify to take parameters:
+  * `robot_behavior:= <bouncy>, marauder, instructor, student1, student2`
+  * `world:= <world>, house`
+  * `open_rviz:= true , <false>`
+  * `plot_laser:= true , <false>`
+
+```bash
+$ roslaunch mhered robot.launch robot_behavior:=instructor plot_laser:=true
 ```
 
-Next steps:
+* update this .md file
 
-- [ ] modify `dist_to_obstacle.py` to get distance to object in beam +/-X degrees, dealing with NaN
-- [ ] send cmd_vel commands
-- [ ] implement straight to goal
-- [ ] implement main loop that checks condition to stop when obstacle
-- [ ] implement rotate to find clear direction 
-- [ ] test
-- [ ] implement PID
+* test alternative implementations:
+  * instructor solution: [robot_instructor.py](../src/mhered/src/robot_marauder.py) - ok but got stuck
+  * PID implementation by student 1 ([Mohammed Zia Ahmed Khan](https://www.udemy.com/user/mohammed-zia-ahmed-khan-2/)) : [robot_student1.py](../src/mhered/src/robot_student1.py) - behaves as a slow bouncy, quite good, no collision
+  * PID implementation by student  2 ([Wellington Noberto](https://www.udemy.com/user/wellington-noberto/)) : [robot_student2.py](../src/mhered/src/robot_student2.py) - ok but skids and got stuck
