@@ -1,5 +1,21 @@
 #!/usr/bin/env python3
 
+""" bumper_app
+Assignment 2 Part 1: Move-Stop-Rotate Behavior for Obstacle Avoidance
+
+Loop:
+Behavior 1: Move the robot in a straight line until a laser beam of [-5,+5] deg
+ around the centre line detects an obstacle closer than 0.6 m
+
+Behavior 2: Rotate the robot until the same laser beam detects no obstacles
+ closer than 3m
+
+Observe if the robot succeeds to move forever without hitting obstacles.
+Test on the maze and house environment.
+
+"""
+
+
 import rospy
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
@@ -71,7 +87,7 @@ def scan_callback(message):
     fwd_ranges = [r for (a, r) in zip(
         angles_sorted, clean_ranges_sorted) if abs(a) < BEAM_ANGLE]
     fwd_clearance = min(fwd_ranges)
-    print(f"FWD CLEARANCE:{fwd_clearance:8.4}")
+    print(f"\nFWD CLEARANCE:  {fwd_clearance:8.4}\n")
 
 
 def move_fwd(velocity_publisher, speed):
