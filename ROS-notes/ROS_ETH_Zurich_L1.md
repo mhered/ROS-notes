@@ -4,7 +4,7 @@ typora-copy-images-to: assets/images
 
 # Lesson #1
 
-
+[Video (Youtube) L1](https://www.youtube.com/watch?v=aL7zLnaEdAg) | [Slides L1](./course-materials/ETH_Zurich_Slides_1.pdf)
 
 ## What is ROS?
 
@@ -237,6 +237,8 @@ $ rosrun gazebo_ros gazebo
 End of Lesson #1
 
 # Exercise #1
+
+[Exercise Sheet](./course-materials/ETH_Zurich_Exercises_1.pdf)
 
 1. set up the Husky simulation:
 

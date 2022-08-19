@@ -63,11 +63,11 @@ Udemy ROS for Beginners course by [Anis Koubaa](https://www.udemy.com/user/anis-
 - [ ] **Assignment 2**
 
 ##  ETH Zurich Programming for Robotics (ROS) Course
-[Programming for Robotics (ROS) Course playlist](https://www.youtube.com/playlist?list=PLE-BQwvVGf8HOvwXPgtDfWoxd4Cc6ghiP): ETH Zurich Course, 7 lessons. Watched only part of first lesson, but looks great. Course material (lessons, exercises for 2021 available to download: https://rsl.ethz.ch/education-students/lectures/ros.html#course_material
+[2021 Programming for Robotics (ROS) Course homepage](https://rsl.ethz.ch/education-students/lectures/ros.html): ETH Zurich Course 4 lessons + case studies. Videos + course material (lessons, exercises etc) available to download. I originally discovered this course through this Youtube playlist from 2017: [2017 Programming for Robotics (ROS) Course Youtube playlist](https://www.youtube.com/playlist?list=PLE-BQwvVGf8HOvwXPgtDfWoxd4Cc6ghiP). 
 
 * [Lesson #1](./ROS-notes/ROS_ETH_Zurich_L1.md)
 * [Lesson #2](./ROS-notes/ROS_ETH_Zurich_L2.md)
-* 
+* [Lesson #3](./ROS-notes/ROS_ETH_Zurich_L3.md)
 
 
 ## Other ROS resources to check:

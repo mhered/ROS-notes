@@ -1,5 +1,7 @@
 # Lesson #2
 
+[Video (Youtube) L2](https://youtu.be/v9RgXcosuww) | [Slides L2](./course-materials/ETH_Zurich_Slides_2.pdf) 
+
 * ROS packages
 * Working with Eclipse IDE for C++
 * ROS C++ library `roscpp` basics
@@ -34,6 +36,8 @@ ROS sfw is organized into [ROS packages](https://wiki.ros.org/Packages) which co
 
 
 # Exercise #2
+
+[Exercise Sheet](./course-materials/ETH_Zurich_Exercises_2.pdf)
 
 Create a subscriber to the `/scan` topic in C++
 
