@@ -150,7 +150,7 @@ if __name__ == '__main__':
     try:
 
         # declare the node
-        rospy.init_node('bumper_node', anonymous=True)
+        rospy.init_node('marauder_node', anonymous=True)
 
         # declare velocity publisher
         cmd_vel_topic = '/cmd_vel'
