@@ -7,6 +7,7 @@
         * follow obstacle boundary until no obstacle in direction of the goal
 """
 
+import sys
 import rospy
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
@@ -60,10 +61,11 @@ def scan_callback(message):
 
     # use clearances from the global variables
     # (constantly updated by scan_callback())
-    global fwd_clearance, left_clearance, right_clearance
+    global fwd_clearance, right_clearance, goal_clearance
 
     # parameters
     global BEAM_ANGLE, LASER_RANGE
+    global GOAL_X, GOAL_Y
 
     ranges = np.asarray(message.ranges)
     angles = np.degrees((message.angle_min +
@@ -88,18 +90,22 @@ def scan_callback(message):
     fwd_clearance = min(fwd_ranges)
 
     right_ranges = [r for (a, r) in zip(
-        angles_sorted, clean_ranges_sorted) if (a > 30 and a < 100)]
+        angles_sorted, clean_ranges_sorted) if (a > 60 and a < 90)]
     right_clearance = min(right_ranges)
 
-    left_ranges = [r for (a, r) in zip(
-        angles_sorted, clean_ranges_sorted) if (a < -30 and a > -100)]
-    left_clearance = min(left_ranges)
+    (distance_to_goal, angle_to_goal) = robot_coordinates(
+        GOAL_X, GOAL_Y, x, y)
+
+    goal_ranges = [r for (a, r) in zip(
+        angles_sorted, clean_ranges_sorted) if (
+        abs(a-angle_to_goal) < BEAM_ANGLE)]
+    goal_clearance = min(goal_ranges)
 
     """
     print(
-        f"\nCLEARANCE FWD: {fwd_clearance:8.4}"
-        f" LEFT: {left_clearance:8.4}"
-        f" RIGHT: {right_clearance:8.4}\n")
+        f"\nCLEARANCE FWD: {fwd_clearance:6.3}"
+        f" GOAL: {goal_clearance:6.3}"
+        f" RIGHT: {right_clearance:6.3}\n")
     """
 
 
@@ -107,6 +113,45 @@ def robot_coordinates(x, y, x_robot, y_robot):
     distance = math.sqrt((x-x_robot)**2 + (y - y_robot)**2)
     direction = math.atan2((y-y_robot), (x-x_robot))
     return distance, direction
+
+
+def rotate(velocity_publisher, omega_degrees, angle_degrees, is_clockwise):
+    """ Rotation in place method """
+
+    # declare a Twist message to send velocity commands
+    velocity_message = Twist()
+
+    omega = math.radians(omega_degrees)
+
+    if (is_clockwise):
+        velocity_message.angular.z = -abs(omega)
+    else:
+        velocity_message.angular.z = abs(omega)
+
+    loop_rate = rospy.Rate(50)  # we publish the velocity at 10 Hz (10 times per second)
+
+    rospy.loginfo("Rotation in place")
+
+    # get initial timestamp
+    t0 = rospy.Time.now().to_sec()
+
+    while True:
+
+        velocity_publisher.publish(velocity_message)
+
+        # get initial timestamp
+        t1 = rospy.Time.now().to_sec()
+        curr_yaw_degrees = (t1-t0)*omega_degrees
+        loop_rate.sleep()
+
+        print(f"Angle rotated: {curr_yaw_degrees:10.4} Pose: ({x:8.4}, {y:8.4}, {yaw:8.4})")
+        if not(curr_yaw_degrees < angle_degrees):
+            rospy.loginfo("Angle reached")
+            break
+
+    # stop the robot after the angle is reached
+    velocity_message.angular.z = 0.0
+    velocity_publisher.publish(velocity_message)
 
 
 def go_to(velocity_publisher, goal):
@@ -135,11 +180,6 @@ def go_to(velocity_publisher, goal):
         (distance_to_goal, angle_to_goal) = robot_coordinates(
             x_goal, y_goal, x, y)
 
-        """
-        rospy.loginfo(
-            f"Goal at {distance_to_goal:6.3}m {math.degrees(angle_to_goal):6.3}deg Pose: ({x:6.3}m, {y:6.3}m, {yaw:6.3}rad)")
-        """
-
         if distance_to_goal < THRESHOLD:
             rospy.loginfo("** GOAL REACHED\n\n")
             success = True
@@ -150,10 +190,14 @@ def go_to(velocity_publisher, goal):
             success = False
             break
 
-        vel_lin = min(0.5, K_DISTANCE * distance_to_goal)
+        vel_lin = min(LIN_SPEED, K_DISTANCE * distance_to_goal)
         vel_ang = K_ANGLE * (angle_to_goal - yaw)
+
         rospy.loginfo(
-            f"Goal at {angle_to_goal:6.3}rad yaw: {yaw:6.3}rad) vel_ang: {vel_ang:6.3}rad/s")
+            # f"Pose: ({x:5.2}m, {y:5.2}m, {math.degrees(yaw):6.2}deg)" +
+            f"Goal at {distance_to_goal:5.2}m " +
+            f"{math.degrees(angle_to_goal):6.2}deg " +
+            f"v: {vel_lin:5.2}m/s w: {vel_ang:5.2}rad/s")
 
         velocity_message.linear.x = vel_lin
         velocity_message.angular.z = vel_ang
@@ -169,18 +213,69 @@ def go_to(velocity_publisher, goal):
     return success
 
 
-def follow_wall(velocity_publisher, speed):
+def follow_wall(velocity_publisher, goal):
     """ Follow wall method """
 
     # declare a Twist message to send velocity commands
     velocity_message = Twist()
 
-    # get current location from the global variable before entering the loop
+    # use current location from the global variable
+    # constantly updated by odom_callback()
     global x, y, yaw
+
+    x_goal = goal[0]
+    y_goal = goal[1]
 
     # use clearances from the global variables
     # (constantly updated by scan_callback())
-    global fwd_clearance, left_clearance, right_clearance
+    global fwd_clearance, right_clearance, goal_clearance
+
+    global THRESHOLD, K_DISTANCE, K_ANGLE
+    global RATE, SAFETY_DIST, MIN_CLEARANCE
+    global LIN_SPEED, ROT_SPEED
+
+    # Publish the velocity at RATE Hz (RATE times per second)
+    loop_rate = rospy.Rate(RATE)
+
+    rospy.loginfo(f"Follow wall: {goal} from ({x}, {y})")
+
+    # rotate 90deg anticlockwise
+    rotate(
+        velocity_publisher=velocity_publisher,
+        omega_degrees=ROT_SPEED,
+        angle_degrees=90,
+        is_clockwise=False)
+
+    # main loop to follow wall until clearance towards goal
+    while True:
+
+        (distance_to_goal, angle_to_goal) = robot_coordinates(
+            x_goal, y_goal, x, y)
+
+        vel_lin = min(LIN_SPEED, K_DISTANCE * fwd_clearance)
+        vel_ang = K_ANGLE * (right_clearance - SAFETY_DIST)
+
+        rospy.loginfo(
+            # f"Pose: ({x:5.2}m, {y:5.2}m, {math.degrees(yaw):6.2}deg)" +
+            f"Goal at {math.degrees(angle_to_goal):6.2}deg " +
+            f"Clearances goal: {goal_clearance:5.2} right: {right_clearance:5.2} " +
+            f"v: {vel_lin:5.2}m/s w: {vel_ang:5.2}rad/s")
+
+        if goal_clearance > min(distance_to_goal, MIN_CLEARANCE):
+            rospy.loginfo("** CLEARANCE TO GOAL REACHED\n\n")
+            break
+
+        velocity_message.linear.x = vel_lin
+        velocity_message.angular.z = vel_ang
+
+        velocity_publisher.publish(velocity_message)
+        loop_rate.sleep()
+
+    # stop the robot on exit
+    rospy.loginfo("** Stopping go_to")
+    velocity_message.linear.x = 0.0
+    velocity_message.angular.z = 0.0
+    velocity_publisher.publish(velocity_message)
 
 
 def bug0_robot(velocity_publisher, goal_x, goal_y):
@@ -198,7 +293,8 @@ def bug0_robot(velocity_publisher, goal_x, goal_y):
     global WAIT, LIN_SPEED, ROT_SPEED, RATE
 
     (dist_to_goal, yaw_to_goal) = robot_coordinates(goal_x, goal_y, x, y)
-    print(f"** Goal at {dist_to_goal}(m), {math.degrees(yaw_to_goal)}(deg)\n\n")
+    rospy.loginfo(
+        f"** Goal at {dist_to_goal}(m), {math.degrees(yaw_to_goal)}(deg)\n\n")
 
     while True:
         # Behavior 1: go to goal unless blocked by obstacle
@@ -215,19 +311,31 @@ def bug0_robot(velocity_publisher, goal_x, goal_y):
         # Behavior 2: follow wall until clearance found
         rospy.loginfo("** BEHAVIOR 2: FOLLOW WALL\n\n")
         follow_wall(velocity_publisher=velocity_publisher,
-                    speed=LIN_SPEED)
+                    goal=[goal_x, goal_y])
         rospy.loginfo("** DIRECTION TO GOAL CLEAR FROM OBSTACLES\n\n")
         time.sleep(WAIT)
 
-    rospy.loginfo("** REACHED GOAL\n\n")
+    rospy.loginfo("** EXIT BUG0\n\n")
     time.sleep(WAIT)
 
 
 if __name__ == '__main__':
     try:
 
+        """
+        # How to pass arguments to a ROS node in python
+        # cfr. http://wiki.ros.org/rospy/Overview/Initialization%20and%20Shutdown
+        # cfr. https://answers.ros.org/question/64552/how-to-pass-arguments-to-python-node/
+        arguments = rospy.myargv(argv=sys.argv)
+        if len(arguments) < 2:
+            print("No arguments received")
+        else:
+            print(f"Arguments: x_goal={arguments[1]} y_goal={arguments[2]} ")
+        """
+
         # declare the node
-        rospy.init_node('bug0_node', anonymous=True)
+        # Note: this name is overriden by the name used by the launch file
+        rospy.init_node('my_bug0_node')
 
         # declare velocity publisher
         cmd_vel_topic = '/cmd_vel'
@@ -256,6 +364,7 @@ if __name__ == '__main__':
         global WAIT, RATE
         global LIN_SPEED, ROT_SPEED
         global THRESHOLD, K_DISTANCE, K_ANGLE
+        global GOAL_X, GOAL_Y
 
         LASER_RANGE = rospy.get_param("LASER_RANGE", 5.0)  # m
         BEAM_ANGLE = rospy.get_param("BEAM_ANGLE", 5.0)  # degrees
@@ -266,12 +375,14 @@ if __name__ == '__main__':
 
         WAIT = rospy.get_param("WAIT", .5)  # s
         LIN_SPEED = rospy.get_param("LIN_SPEED", 0.4)  # m/s
-        # ROT_SPEED = rospy.get_param("ROT_SPEED", 15.0)  # degrees/s
+        ROT_SPEED = rospy.get_param("ROT_SPEED", 15.0)  # degrees/s
         RATE = rospy.get_param("RATE", 10.0)  # Hz
 
         # for go_to()
-        GOAL_X = rospy.get_param("GOAL_X", 1.0)  # m
-        GOAL_Y = rospy.get_param("GOAL_X", -2.0)  # m
+        # (1,-1.8) to test only go_to
+        # (2, -0.8) to test follow_wall
+        GOAL_X = rospy.get_param("GOAL_X", 2.0)  # m
+        GOAL_Y = rospy.get_param("GOAL_Y", 0.5)  # m
 
         THRESHOLD = rospy.get_param("THRESHOLD", 0.1)  # ?
         K_DISTANCE = rospy.get_param("K_DISTANCE", 0.25)  # ?
@@ -284,7 +395,10 @@ if __name__ == '__main__':
                    goal_x=GOAL_X,
                    goal_y=GOAL_Y)
 
-        rospy.spin()
+        # Do I need this? How to use rospy.spin()?
+        # If I remove it the node dies after reaching the goal
+        # If I keep it the node stays alive but does nothing
+        # rospy.spin()
 
     except rospy.ROSInterruptException:
         rospy.loginfo("Node terminated")

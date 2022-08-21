@@ -9,7 +9,7 @@
     <arg name="world" default="stage_4"/>
     <!-- options: <stage_4> world house -->
 
-    <arg name="bug_behavior" default="bug0"/>
+    <arg name="bug_behavior" default="0"/>
     <!-- options: <0> 1 2 instructor student1 student2 -->
 
     <!-- launch TurtleBot3 simulator in maze environment -->
@@ -33,7 +33,7 @@
     <!-- i.e roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch -->
 
     <!--
-    <include file="$(find turtlebot3_teleop)/launch/turtlebot3_teleop_key.launch"/> 
+    <include file="$(find turtlebot3_teleop)/launch/turtlebot3_teleop_key.launch"/>
     -->
 
     <!-- launch the bug robot -->
