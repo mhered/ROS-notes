@@ -58,13 +58,22 @@ Udemy ROS for Beginners course by [Anis Koubaa](https://www.udemy.com/user/anis-
 ##  ETH Zurich Programming for Robotics (ROS) Course
 [2021 Programming for Robotics (ROS) Course homepage](https://rsl.ethz.ch/education-students/lectures/ros.html): ETH Zurich Course 4 lessons + case studies. Videos + course material (lessons, exercises etc) available to download. I originally discovered this course through this Youtube playlist from 2017: [2017 Programming for Robotics (ROS) Course Youtube playlist](https://www.youtube.com/playlist?list=PLE-BQwvVGf8HOvwXPgtDfWoxd4Cc6ghiP). 
 
-* [Lesson #1](./ROS-notes/ROS_ETH_Zurich_L1.md)
-* [Lesson #2](./ROS-notes/ROS_ETH_Zurich_L2.md)
-* [Lesson #3](./ROS-notes/ROS_ETH_Zurich_L3.md)
+[Lesson #1](./ROS-notes/ROS_ETH_Zurich_L1.md)
 
+[Lesson #2](./ROS-notes/ROS_ETH_Zurich_L2.md)
+
+[Lesson #3](./ROS-notes/ROS_ETH_Zurich_L3.md)
+
+## Articulated Robotics
+
+[Articulated Robotics](https://articulatedrobotics.xyz/) is a phenomenal series of blog and video tutorials by Josh Newans including a step by step guide to building your own ROS2-based mobile robot with camera and LIDAR.
+
+[Part 1](./ROS-notes/10.ROS2-Getting-ready-Aug22-L01-XX.md): Getting ready for ROS (Videos #01 - #08 and Extra)
+
+Part 2: Making a Mobile Robot project
 
 ## Other ROS resources to check:
-* [Articulated Robotics](https://articulatedrobotics.xyz/) a phenomenal series of blog and video tutorials by Josh Newans including a step by step guide to building your own ROS2-based mobile robot with camera and LIDAR.
+
 * [ROS robotics learning website](https://www.rosroboticslearning.com/) , [youtube video of DIY Jetson nano+ RPLidar robot](https://www.youtube.com/watch?v=Uz_i_sjVhIM) and [github repo](https://github.com/bandasaikrishna/Autonomous_Mobile_Robot)
 * [JdeRobot robotics education website](https://jderobot.github.io/projects/robotics_education/) and [Robotics-Academy exercises](https://jderobot.github.io/RoboticsAcademy/exercises/)
 * [Exploring ROS using a 2-wheeled robot](https://www.youtube.com/playlist?list=PLK0b4e05LnzY2I4sXWTOA4_82cMh6tL-5) series of 13 videos 10-30' long each by The Construct covering URDF modelling, laser scans, obstacle avoidance, motion planning, wall follower, Bug0, 1 & 2, gmapping.
