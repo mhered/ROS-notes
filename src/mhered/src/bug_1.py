@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
 """
-** BUG0 method**
+** BUG1 method**
     Repeat:
         * go towards the goal until obstacle detected
-        * follow obstacle boundary until no obstacle in direction of the goal
+        * follow wall for a complete turn around the obstacle
+            * record minimum distance to goal
+        * follow wall point closest to goal
 """
 
 import rospy
@@ -250,8 +252,8 @@ def go_to(velocity_publisher, goal):
     return success
 
 
-def follow_wall(velocity_publisher, goal):
-    """ Follow wall method """
+def turn_around_obstacle(velocity_publisher, goal, exit):
+    """ Turn around obstacle method """
 
     # declare a Twist message to send velocity commands
     velocity_message = Twist()
@@ -262,6 +264,14 @@ def follow_wall(velocity_publisher, goal):
 
     x_goal = goal[0]
     y_goal = goal[1]
+
+    x_exit = exit[0]
+    y_exit = exit[1]
+
+    # initialize search for point closest to goal
+    x_closest = x_exit
+    y_closest = y_exit
+    (d_closest, _) = robot_coordinates(x_goal, y_goal, x_closest, y_closest, yaw)
 
     # use clearances from the global variables
     # (constantly updated by scan_callback())
@@ -274,7 +284,9 @@ def follow_wall(velocity_publisher, goal):
     # Publish the velocity at RATE Hz (RATE times per second)
     loop_rate = rospy.Rate(RATE)
 
-    rospy.loginfo(f"Follow wall: {goal} from ({x:10.4}, {y:10.4})")
+    rospy.loginfo(f"Follow wall until ({x_exit:10.4}, {y_exit:10.4}) " +
+                  f"from ({x:10.4}, {y:10.4}) " +
+                  f"with goal at ({x_goal:10.4}, {y_goal:10.4}) ")
 
     # rotate 90deg anticlockwise
     rotate(
@@ -283,16 +295,43 @@ def follow_wall(velocity_publisher, goal):
         angle_degrees=90,
         is_clockwise=False)
 
-    # main loop to follow wall until clearance towards goal
+    iteration = 0
+    # main loop to follow wall until exit reached
     while True:
-
+        iteration += 1
+        # calculate distances to goal and exit points
         (distance_to_goal, angle_to_goal) = robot_coordinates(
             x_goal, y_goal, x, y, yaw)
+
+        (distance_to_exit, _) = robot_coordinates(
+            x_exit, y_exit, x, y, yaw)
+
+        # if goal reached then exit
+        if distance_to_goal < THRESHOLD:
+            rospy.loginfo("** GOAL REACHED\n\n")
+            break
+
+        # if after some iterations exit point is reached then exit
+        # need to allow some iterations otherwise the turn aborts
+        if iteration > 15 and distance_to_exit < THRESHOLD:
+            rospy.loginfo("** EXIT POINT REACHED\n\n")
+            break
+
+        # if current location is closest to goal then update it
+        if distance_to_goal < d_closest:
+            x_closest = x
+            y_closest = y
+            d_closest = distance_to_goal
 
         vel_lin = min(
             LIN_SPEED,
             K_DISTANCE * fwd_clearance)
         vel_ang = K_ANGLE * (SAFETY_DIST - right_clearance)
+
+        velocity_message.linear.x = vel_lin
+        velocity_message.angular.z = vel_ang
+
+        velocity_publisher.publish(velocity_message)
 
         rospy.loginfo(
             # f"Pose: ({x:5.2}m, {y:5.2}m, {math.degrees(yaw):6.2}deg)" +
@@ -300,25 +339,18 @@ def follow_wall(velocity_publisher, goal):
             f"Clearances goal: {goal_clearance:10.4} right: {right_clearance:10.4} " +
             f"v: {vel_lin:10.4}m/s w: {vel_ang:10.4}rad/s")
 
-        if goal_clearance > min(distance_to_goal, MIN_CLEARANCE):
-            rospy.loginfo("** CLEARANCE TO GOAL REACHED\n\n")
-            break
-
-        velocity_message.linear.x = vel_lin
-        velocity_message.angular.z = vel_ang
-
-        velocity_publisher.publish(velocity_message)
         loop_rate.sleep()
 
     # stop the robot on exit
-    rospy.loginfo("** Stopping go_to")
+    rospy.loginfo("** Stopping follow_wall")
     velocity_message.linear.x = 0.0
     velocity_message.angular.z = 0.0
     velocity_publisher.publish(velocity_message)
+    return x_closest, y_closest
 
 
-def bug0_robot(velocity_publisher, goal_x, goal_y):
-    """ BUG0 """
+def bug1_robot(velocity_publisher, goal_x, goal_y):
+    """ BUG1 """
 
     # use current location from the global variables
     # (constantly updated by odom_callback())
@@ -345,32 +377,35 @@ def bug0_robot(velocity_publisher, goal_x, goal_y):
             break
         else:
             rospy.loginfo("** REACHED OBSTACLE\n\n")
+            # remember start of turn around obstacle
+            x0 = x
+            y0 = y
             time.sleep(WAIT)
 
-        # Behavior 2: follow wall until clearance found
+        # Behavior 2: follow wall for a full turn around obstacle
         rospy.loginfo("** BEHAVIOR 2: FOLLOW WALL\n\n")
-        follow_wall(velocity_publisher=velocity_publisher,
-                    goal=[goal_x, goal_y])
-        rospy.loginfo("** DIRECTION TO GOAL CLEAR FROM OBSTACLES\n\n")
+        x_closest, y_closest = turn_around_obstacle(
+            velocity_publisher=velocity_publisher,
+            goal=[goal_x, goal_y],
+            exit=[x0, y0])
+        rospy.loginfo("** FULL TURN AROUND OBSTACLE COMPLETED\n\n")
         time.sleep(WAIT)
 
-    rospy.loginfo("** EXIT BUG0\n\n")
+        # Behavior 3: follow wall until closest_pt
+        rospy.loginfo("** BEHAVIOR 2: FOLLOW WALL\n\n")
+        _ = turn_around_obstacle(
+            velocity_publisher=velocity_publisher,
+            goal=[goal_x, goal_y],
+            exit=[x_closest, y_closest])
+        rospy.loginfo("** CLOSEST PT TO GOAL REACHED\n\n")
+        time.sleep(WAIT)
+
+    rospy.loginfo("** EXIT BUG1\n\n")
     time.sleep(WAIT)
 
 
 if __name__ == '__main__':
     try:
-
-        """
-        # How to pass arguments to a ROS node in python
-        # cfr. http://wiki.ros.org/rospy/Overview/Initialization%20and%20Shutdown
-        # cfr. https://answers.ros.org/question/64552/how-to-pass-arguments-to-python-node/
-        arguments = rospy.myargv(argv=sys.argv)
-        if len(arguments) < 2:
-            print("No arguments received")
-        else:
-            print(f"Arguments: x_goal={arguments[1]} y_goal={arguments[2]} ")
-        """
 
         # declare the node
         # Note: this name is overriden by the name used by the launch file
@@ -430,7 +465,7 @@ if __name__ == '__main__':
         # launch the bug0 robot app
         time.sleep(15.0)
         rospy.loginfo("** LAUNCHING BUG0\n\n")
-        bug0_robot(velocity_publisher=velocity_publisher,
+        bug1_robot(velocity_publisher=velocity_publisher,
                    goal_x=GOAL_X,
                    goal_y=GOAL_Y)
 
