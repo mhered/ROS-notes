@@ -448,7 +448,7 @@ if __name__ == '__main__':
         MIN_CLEARANCE = rospy.get_param("MIN_CLEARANCE", 3.0)  # m
 
         WAIT = rospy.get_param("WAIT", .5)  # s
-        LIN_SPEED = rospy.get_param("LIN_SPEED", 0.4)  # m/s
+        LIN_SPEED = rospy.get_param("LIN_SPEED", 0.3)  # m/s
         ROT_SPEED = rospy.get_param("ROT_SPEED", 30.0)  # degrees/s
         RATE = rospy.get_param("RATE", 10.0)  # Hz
 
