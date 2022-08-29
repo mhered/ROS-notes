@@ -111,7 +111,7 @@ def scan_callback(message):
     right_clearance = get_clearance(
         angles=angles_sorted,
         ranges=clean_ranges_sorted,
-        beam_dir=-90,
+        beam_dir=-85,
         beam_aperture=BEAM_ANGLE)
 
     (distance2goal, angle2goal_rads) = robot_coordinates(
@@ -129,10 +129,10 @@ def scan_callback(message):
 
     """
     print(
-        f"\nCLEARANCE FWD: {fwd_clearance:10.4}" +
-        f" GOAL: {goal_clearance:10.4}" +
-        f" angle2goal: {angle2goal_deg:10.4}" +
-        f" RIGHT: {right_clearance:10.4}\n"
+        f"\nCLEARANCE FWD: {fwd_clearance:8.4}" +
+        f" GOAL: {goal_clearance:8.4}" +
+        f" angle2goal: {angle2goal_deg:8.4}" +
+        f" RIGHT: {right_clearance:8.4}\n"
     )
     """
 
@@ -179,7 +179,7 @@ def rotate(velocity_publisher, omega_degrees, angle_degrees, is_clockwise):
         loop_rate.sleep()
 
         rospy.loginfo(
-            f"Angle rotated: {curr_yaw_degrees:10.4}deg Pose: ({x:10.4}m, {y:10.4}m, {math.degrees(yaw):10.4}deg)")
+            f"Angle rotated: {curr_yaw_degrees:8.4}deg Pose: ({x:8.4}m, {y:8.4}m, {math.degrees(yaw):8.4}deg)")
         if not(curr_yaw_degrees < angle_degrees):
             rospy.loginfo("Angle reached")
             break
@@ -209,7 +209,7 @@ def go_to(velocity_publisher, goal):
     # Publish the velocity at RATE Hz (RATE times per second)
     loop_rate = rospy.Rate(RATE)
 
-    rospy.loginfo(f"Go to goal: {goal} from ({x:10.4}, {y:10.4})")
+    rospy.loginfo(f"Go to goal: {goal} from ({x:8.4}, {y:8.4})")
 
     while True:
 
@@ -234,9 +234,9 @@ def go_to(velocity_publisher, goal):
 
         rospy.loginfo(
             # f"Pose: ({x:5.2}m, {y:5.2}m, {math.degrees(yaw):6.2}deg)" +
-            f"Goal at {distance_to_goal:10.4}m " +
-            f"{math.degrees(angle_to_goal):10.4}deg " +
-            f"v: {vel_lin:10.4}m/s w: {vel_ang:10.4}rad/s")
+            f"Goal at {distance_to_goal:8.4}m " +
+            f"{math.degrees(angle_to_goal):8.4}deg " +
+            f"v: {vel_lin:8.4}m/s w: {vel_ang:8.4}rad/s")
 
         velocity_message.linear.x = vel_lin
         velocity_message.angular.z = vel_ang
@@ -284,9 +284,9 @@ def turn_around_obstacle(velocity_publisher, goal, exit):
     # Publish the velocity at RATE Hz (RATE times per second)
     loop_rate = rospy.Rate(RATE)
 
-    rospy.loginfo(f"Follow wall until ({x_exit:10.4}, {y_exit:10.4}) " +
-                  f"from ({x:10.4}, {y:10.4}) " +
-                  f"with goal at ({x_goal:10.4}, {y_goal:10.4}) ")
+    rospy.loginfo(f"Follow wall until ({x_exit:8.4}, {y_exit:8.4}) " +
+                  f"from ({x:8.4}, {y:8.4}) " +
+                  f"with goal at ({x_goal:8.4}, {y_goal:8.4}) ")
 
     # rotate 90deg anticlockwise
     rotate(
@@ -335,9 +335,9 @@ def turn_around_obstacle(velocity_publisher, goal, exit):
 
         rospy.loginfo(
             # f"Pose: ({x:5.2}m, {y:5.2}m, {math.degrees(yaw):6.2}deg)" +
-            f"Goal at {math.degrees(angle_to_goal):10.4}deg " +
-            f"Clearances goal: {goal_clearance:10.4} right: {right_clearance:10.4} " +
-            f"v: {vel_lin:10.4}m/s w: {vel_ang:10.4}rad/s")
+            f"Goal at {math.degrees(angle_to_goal):8.4}deg " +
+            f"Clearances goal: {goal_clearance:8.4} right: {right_clearance:8.4} " +
+            f"v: {vel_lin:8.4}m/s w: {vel_ang:8.4}rad/s")
 
         loop_rate.sleep()
 
@@ -365,7 +365,7 @@ def bug1_robot(velocity_publisher, goal_x, goal_y):
 
     (dist_to_goal, angle_to_goal) = robot_coordinates(goal_x, goal_y, x, y, yaw)
     rospy.loginfo(
-        f"** Goal at {dist_to_goal:10.4}(m), {math.degrees(angle_to_goal):10.4}(deg)\n\n")
+        f"** Goal at {dist_to_goal:8.4}(m), {math.degrees(angle_to_goal):8.4}(deg)\n\n")
 
     while True:
         # Behavior 1: go to goal unless blocked by obstacle
@@ -441,14 +441,14 @@ if __name__ == '__main__':
         global GOAL_X, GOAL_Y
 
         LASER_RANGE = rospy.get_param("LASER_RANGE", 5.0)  # m
-        BEAM_ANGLE = rospy.get_param("BEAM_ANGLE", 5.0)  # degrees
+        BEAM_ANGLE = rospy.get_param("BEAM_ANGLE", 2.0)  # degrees
 
         ANGLE_TOL = rospy.get_param("ANGLE_TOL", 1.0)  # degrees
         SAFETY_DIST = rospy.get_param("SAFETY_DIST", 0.3)  # m
         MIN_CLEARANCE = rospy.get_param("MIN_CLEARANCE", 3.0)  # m
 
         WAIT = rospy.get_param("WAIT", .5)  # s
-        LIN_SPEED = rospy.get_param("LIN_SPEED", 0.3)  # m/s
+        LIN_SPEED = rospy.get_param("LIN_SPEED", 0.2)  # m/s
         ROT_SPEED = rospy.get_param("ROT_SPEED", 30.0)  # degrees/s
         RATE = rospy.get_param("RATE", 10.0)  # Hz
 
@@ -459,8 +459,8 @@ if __name__ == '__main__':
         GOAL_Y = rospy.get_param("GOAL_Y", -0.2)  # m
 
         THRESHOLD = rospy.get_param("THRESHOLD", 0.1)  # ?
-        K_DISTANCE = rospy.get_param("K_DISTANCE", 0.25)  # ?
-        K_ANGLE = rospy.get_param("K_ANGLE", 1.0)  # ?
+        K_DISTANCE = rospy.get_param("K_DISTANCE", 0.2)  # ?
+        K_ANGLE = rospy.get_param("K_ANGLE", .8)  # ?
 
         # launch the bug0 robot app
         time.sleep(15.0)

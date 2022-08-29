@@ -55,7 +55,7 @@ def odom_callback(odom_message):
 
 def get_clearance(angles, ranges, beam_dir, beam_aperture):
     """
-    Takes an array of ranges measured at specified angles
+    Take an array of ranges measured at specified angles
     Return clearance in a specified beam direction and aperture
 
     Note: angles, beam_dir, beam aperture must all be in consistent units
@@ -65,6 +65,7 @@ def get_clearance(angles, ranges, beam_dir, beam_aperture):
         angles, ranges) if (
         a > (beam_dir - beam_aperture) and a < (beam_dir + beam_aperture))]
     clearance = np.mean(ranges)
+
     return clearance
 
 
@@ -413,7 +414,7 @@ if __name__ == '__main__':
         MIN_CLEARANCE = rospy.get_param("MIN_CLEARANCE", 3.0)  # m
 
         WAIT = rospy.get_param("WAIT", .5)  # s
-        LIN_SPEED = rospy.get_param("LIN_SPEED", 0.4)  # m/s
+        LIN_SPEED = rospy.get_param("LIN_SPEED", 0.2)  # m/s
         ROT_SPEED = rospy.get_param("ROT_SPEED", 30.0)  # degrees/s
         RATE = rospy.get_param("RATE", 10.0)  # Hz
 
