@@ -2,7 +2,10 @@
 
 This repo contains my notes, assignments and learning material to get started with ROS.
 
+[ROS 1 cheat sheet](./ROS-notes/0.ROS1-Cheat-Sheet.md)
+
 ## ROS for Beginners I: Basics, Motion, and OpenCV
+
 [ROS for Beginners: Basics, Motion, and OpenCV](https://www.udemy.com/course/ros-essentials/)  
 
 <img src="./ROS-notes/assets/sources/udemy-ROS-essentials-diploma-Jan22.jpg" alt="Diploma" style="zoom:20%;" />
