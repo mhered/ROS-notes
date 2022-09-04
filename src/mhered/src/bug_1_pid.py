@@ -15,6 +15,7 @@ from nav_msgs.msg import Odometry
 from tf.transformations import euler_from_quaternion
 import numpy as np
 from sensor_msgs.msg import LaserScan
+from utils import find_nearest, wrap_to_180
 
 import math
 import time
@@ -99,12 +100,13 @@ def scan_callback(message):
                          message.angle_increment * np.asarray(
                              range(len(ranges)))))
 
-    # shift angles >180 from [180 - 360) to [-180, 0)
-    angles_shifted = np.where(angles > 180, angles-360, angles)
+    # wrap angles to [-180, 180)
+    angles_wrapped = wrap_to_180(angles)
 
-    angles_indeces = angles_shifted.argsort()
-    angles_sorted = angles_shifted[angles_indeces[::-1]]
-    ranges_sorted = ranges[angles_indeces[::-1]]
+    # sort angles and ranges
+    ids = angles_wrapped.argsort()
+    angles_sorted = angles_wrapped[ids[::-1]]
+    ranges_sorted = ranges[ids[::-1]]
 
     # deep copy to avoid modifying ydata
     clean_ranges_sorted = ranges_sorted.copy()
@@ -128,9 +130,7 @@ def scan_callback(message):
     (distance2goal, angle2goal_rads) = robot_coordinates(
         GOAL_X, GOAL_Y, x, y, yaw)
 
-    angle2goal_deg = math.degrees(angle2goal_rads)
-    if angle2goal_deg > 180:
-        angle2goal_deg -= 360
+    angle2goal_deg = wrap_to_180(math.degrees(angle2goal_rads))
 
     goal_clearance = get_clearance(
         angles=angles_sorted,
