@@ -18,16 +18,15 @@ Tested on Turtlebot3 in the maze and house environments.
 """
 
 
+import math
+import time
+
+import numpy as np
 import rospy
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
-from tf.transformations import euler_from_quaternion
-import numpy as np
 from sensor_msgs.msg import LaserScan
-
-
-import math
-import time
+from tf.transformations import euler_from_quaternion
 
 # use current location from the global variables
 # (constantly updated by odom_callback())
@@ -73,12 +72,12 @@ def scan_callback(message):
     global BEAM_ANGLE, LASER_RANGE
 
     ranges = np.asarray(message.ranges)
-    angles = np.degrees((message.angle_min +
-                         message.angle_increment * np.asarray(
-                             range(len(ranges)))))
+    angles = np.degrees(
+        (message.angle_min + message.angle_increment * np.asarray(range(len(ranges))))
+    )
 
     # shift angles >180 from [180 - 360) to [-180, 0)
-    angles_shifted = np.where(angles > 180, angles-360, angles)
+    angles_shifted = np.where(angles > 180, angles - 360, angles)
 
     angles_indeces = angles_shifted.argsort()
     angles_sorted = angles_shifted[angles_indeces[::-1]]
@@ -90,14 +89,15 @@ def scan_callback(message):
     clean_ranges_sorted[~np.isfinite(clean_ranges_sorted)] = LASER_RANGE
 
     # slice the beam at -BEAM_ANGLE +BEAM_ANGLE
-    fwd_ranges = [r for (a, r) in zip(
-        angles_sorted, clean_ranges_sorted) if abs(a) < BEAM_ANGLE]
+    fwd_ranges = [
+        r for (a, r) in zip(angles_sorted, clean_ranges_sorted) if abs(a) < BEAM_ANGLE
+    ]
     fwd_clearance = min(fwd_ranges)
     print(f"\nCLEARANCE FWD:  {fwd_clearance:8.4}\n")
 
 
 def move_fwd(velocity_publisher, speed):
-    """ Straight motion method """
+    """Straight motion method"""
 
     # declare a Twist message to send velocity commands
     velocity_message = Twist()
@@ -121,9 +121,10 @@ def move_fwd(velocity_publisher, speed):
         velocity_publisher.publish(velocity_message)
         loop_rate.sleep()
 
-        distance_moved = abs(math.sqrt(((x-x0) ** 2) + ((y-y0) ** 2)))
+        distance_moved = abs(math.sqrt(((x - x0) ** 2) + ((y - y0) ** 2)))
         print(
-            f"** Moving fwd: {distance_moved:6.4}m     Pose: {x:6.4}m, {y:6.4}m, {math.degrees(yaw):6.4}deg")
+            f"** Moving fwd: {distance_moved:6.4}m     Pose: {x:6.4}m, {y:6.4}m, {math.degrees(yaw):6.4}deg"
+        )
         if fwd_clearance < SAFETY_DIST:
             rospy.loginfo("** Obstacle reached")
             break
@@ -135,7 +136,7 @@ def move_fwd(velocity_publisher, speed):
 
 
 def rotate_in_place(velocity_publisher, omega_degrees):
-    """ Rotation in place method """
+    """Rotation in place method"""
 
     # use clearances from the global variables
     # (constantly updated by scan_callback())
@@ -161,11 +162,12 @@ def rotate_in_place(velocity_publisher, omega_degrees):
 
         # get initial timestamp
         t1 = rospy.Time.now().to_sec()
-        curr_yaw_degrees = (t1-t0)*omega_degrees
+        curr_yaw_degrees = (t1 - t0) * omega_degrees
         loop_rate.sleep()
 
         print(
-            f"** Rotating: {curr_yaw_degrees:6.4}deg    Pose: ({x:6.4}m, {y:6.4}m, {math.degrees(yaw):6.4}deg)")
+            f"** Rotating: {curr_yaw_degrees:6.4}deg    Pose: ({x:6.4}m, {y:6.4}m, {math.degrees(yaw):6.4}deg)"
+        )
         if fwd_clearance > MIN_CLEARANCE:
             rospy.loginfo("** Found clearance")
             break
@@ -177,7 +179,7 @@ def rotate_in_place(velocity_publisher, omega_degrees):
 
 
 def bouncy_robot(velocity_publisher):
-    """ Bouncy robot """
+    """Bouncy robot"""
 
     # use current location from the global variables
     # (constantly updated by odom_callback())
@@ -195,27 +197,25 @@ def bouncy_robot(velocity_publisher):
     while True:
         # Behavior 1: move fwd until blocked by obstacle
         print("** BEHAVIOR 1: MOVING FORWARD\n\n")
-        move_fwd(velocity_publisher=velocity_publisher,
-                 speed=LIN_SPEED)
+        move_fwd(velocity_publisher=velocity_publisher, speed=LIN_SPEED)
         print("** REACHED OBSTACLE\n\n")
         time.sleep(WAIT)
 
         # Behavior 2: rotate until clearance found
         print("** BEHAVIOR 2: ROTATING\n\n")
-        rotate_in_place(velocity_publisher=velocity_publisher,
-                        omega_degrees=ROT_SPEED)
+        rotate_in_place(velocity_publisher=velocity_publisher, omega_degrees=ROT_SPEED)
         print("** FOUND DIRECTION CLEAR FROM OBSTACLES\n\n")
         time.sleep(WAIT)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
 
         # declare the node
-        rospy.init_node('bouncy_node', anonymous=True)
+        rospy.init_node("bouncy_node", anonymous=True)
 
         # declare velocity publisher
-        cmd_vel_topic = '/cmd_vel'
+        cmd_vel_topic = "/cmd_vel"
         velocity_publisher = rospy.Publisher(cmd_vel_topic, Twist, queue_size=10)
 
         # declare /odom subscriber
@@ -240,7 +240,7 @@ if __name__ == '__main__':
         SAFETY_DIST = rospy.get_param("SAFETY_DIST", 0.6)  # m
         MIN_CLEARANCE = rospy.get_param("MIN_CLEARANCE", 3.0)  # m
 
-        WAIT = rospy.get_param("WAIT", .5)  # s
+        WAIT = rospy.get_param("WAIT", 0.5)  # s
         LIN_SPEED = rospy.get_param("LIN_SPEED", 0.4)  # m/s
         ROT_SPEED = rospy.get_param("ROT_SPEED", 15.0)  # degrees/s
         RATE = rospy.get_param("RATE", 10.0)  # Hz

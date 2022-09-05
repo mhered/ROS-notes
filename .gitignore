@@ -6,6 +6,9 @@ logs/
 
 .catkin_tools
 
+__pycache__/
+
+
 **/CMakeLists.txt
 **/package.xml
 

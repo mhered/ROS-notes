@@ -80,4 +80,3 @@ Part 2: Making a Mobile Robot project
 * [ROS robotics learning website](https://www.rosroboticslearning.com/) , [youtube video of DIY Jetson nano+ RPLidar robot](https://www.youtube.com/watch?v=Uz_i_sjVhIM) and [github repo](https://github.com/bandasaikrishna/Autonomous_Mobile_Robot)
 * [JdeRobot robotics education website](https://jderobot.github.io/projects/robotics_education/) and [Robotics-Academy exercises](https://jderobot.github.io/RoboticsAcademy/exercises/)
 * [Exploring ROS using a 2-wheeled robot](https://www.youtube.com/playlist?list=PLK0b4e05LnzY2I4sXWTOA4_82cMh6tL-5) series of 13 videos 10-30' long each by The Construct covering URDF modelling, laser scans, obstacle avoidance, motion planning, wall follower, Bug0, 1 & 2, gmapping.
-

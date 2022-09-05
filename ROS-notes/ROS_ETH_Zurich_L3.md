@@ -5,4 +5,3 @@
 # Exercise #3
 
 [Exercise Sheet](./course-materials/ETH_Zurich_Exercises_3.pdf)
-

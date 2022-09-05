@@ -3,7 +3,6 @@
 
 import rospy
 
-
 # import service definition
 from mhered.srv import AddTwoInts, AddTwoIntsRequest, AddTwoIntsResponse
 
@@ -17,13 +16,13 @@ def handle_add_two_ints(request):
 
 def add_two_ints_server():
 
-    rospy.init_node('add_two_ints_server')
+    rospy.init_node("add_two_ints_server")
 
     # create service listening to incoming requests
     # given service name, type and handle function
-    my_service = rospy.Service('add_two_ints', AddTwoInts, handle_add_two_ints)
+    my_service = rospy.Service("add_two_ints", AddTwoInts, handle_add_two_ints)
 
-    print('Server is ready to add integers.')
+    print("Server is ready to add integers.")
     # start service to wait for incoming requests
     rospy.spin()
 

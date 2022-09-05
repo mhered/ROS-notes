@@ -1,22 +1,23 @@
 #!/usr/bin/env python3
 # Student 1: Tony Tao
 
-import rospy
-from yaml import scan
-import roslib
-from geometry_msgs.msg import Twist
-from sensor_msgs.msg import LaserScan
-from nav_msgs.msg import Odometry
 import math
 import time
-from std_srvs.srv import Empty
+
+import roslib
+import rospy
 import tf
 import turtlesim.srv
+from geometry_msgs.msg import Twist
+from nav_msgs.msg import Odometry
+from sensor_msgs.msg import LaserScan
+from std_srvs.srv import Empty
+from yaml import scan
 
 
 def go_straight(xdist, ydist):
     angular = 1 * math.atan2(ydist, xdist)
-    linear = 0.1 * math.sqrt(xdist ** 2 + ydist ** 2)
+    linear = 0.1 * math.sqrt(xdist**2 + ydist**2)
     cmd = Twist()
     cmd.linear.x = linear
     cmd.angular.z = angular
@@ -43,13 +44,15 @@ def laserCallback(laserScan):
     goal_thresh = 0.05
 
     try:
-        (trans, rot) = listener.lookupTransform('base_footprint', 'goal_frame', rospy.Time(0))
+        (trans, rot) = listener.lookupTransform(
+            "base_footprint", "goal_frame", rospy.Time(0)
+        )
     except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
         print("lookup failed")
     quaternion = rot
     rpy = tf.transformations.euler_from_quaternion(quaternion)
-    print('translation vector: (', trans[0], ',', trans[1], ',', trans[2], ')')
-    print('rotation angles: roll=', rpy[0], ' pitch=', rpy[1], ' yaw=', rpy[2])
+    print("translation vector: (", trans[0], ",", trans[1], ",", trans[2], ")")
+    print("rotation angles: roll=", rpy[0], " pitch=", rpy[1], " yaw=", rpy[2])
     xdist = trans[0]
     ydist = trans[1]
     yaw = rpy[2]
@@ -58,7 +61,7 @@ def laserCallback(laserScan):
     print(wall_detected)
 
     # case 1: reached goal
-    if (math.sqrt(xdist**2 + ydist**2) < goal_thresh):
+    if math.sqrt(xdist**2 + ydist**2) < goal_thresh:
         tb3_velpub.publish(cmd)
         print("reached goal!!")
 
@@ -80,7 +83,7 @@ def laserCallback(laserScan):
 def get_minimum(lst):
     temp = []
     for i in lst:
-        if (not math.isnan(i)):
+        if not math.isnan(i):
             temp.append(i)
     return min(temp)
 
@@ -97,21 +100,29 @@ def detect_walls(scan_range, robotx, roboty, yaw, wall_thresh):
 
     # check look angle
     lookangleBroadCaster = tf.TransformBroadcaster()
-    rot_quaternion = tf.transformations.quaternion_from_euler(0, 0, math.atan2(roboty, robotx))
+    rot_quaternion = tf.transformations.quaternion_from_euler(
+        0, 0, math.atan2(roboty, robotx)
+    )
     trans = (0, 0, 0)
     curr_time = rospy.Time.now()
     lookangleBroadCaster.sendTransform(
-        trans, rot_quaternion, curr_time, "look_frame", "base_footprint")
+        trans, rot_quaternion, curr_time, "look_frame", "base_footprint"
+    )
 
     ##
     midIndex = lookangle
     if midIndex - range < 0:
-        beam = scan_range[(midIndex - range) % length: length + 1] + \
-            scan_range[0: midIndex + range + 1]
+        beam = (
+            scan_range[(midIndex - range) % length : length + 1]
+            + scan_range[0 : midIndex + range + 1]
+        )
     elif midIndex + range >= length:
-        beam = scan_range[0: midIndex + range - length] + scan_range[midIndex - range: length + 1]
+        beam = (
+            scan_range[0 : midIndex + range - length]
+            + scan_range[midIndex - range : length + 1]
+        )
     else:
-        beam = scan_range[midIndex - range: midIndex + range + 1]
+        beam = scan_range[midIndex - range : midIndex + range + 1]
     min_dist = get_minimum(beam)
     print(min_dist)
     if min_dist < wall_thresh:
@@ -122,7 +133,7 @@ def detect_walls(scan_range, robotx, roboty, yaw, wall_thresh):
 def detect_walls2(scan_range, wall_thresh):
     window = 50
     length = len(scan_range)
-    beam = scan_range[length - window: length + 1] + scan_range[0: window]
+    beam = scan_range[length - window : length + 1] + scan_range[0:window]
     min_dist = get_minimum(beam)
     print(min_dist)
     if min_dist < wall_thresh:
@@ -131,15 +142,15 @@ def detect_walls2(scan_range, wall_thresh):
 
 
 def main():
-    rospy.init_node('bug0')
+    rospy.init_node("bug0")
 
     global listener
     global tb3_velpub
 
     listener = tf.TransformListener()
-    listener.waitForTransform('map', 'goal_frame', rospy.Time(), rospy.Duration(10.0))
+    listener.waitForTransform("map", "goal_frame", rospy.Time(), rospy.Duration(10.0))
 
-    tb3_velpub = rospy.Publisher('cmd_vel', Twist, queue_size=10)
+    tb3_velpub = rospy.Publisher("cmd_vel", Twist, queue_size=10)
     rospy.Subscriber("scan", LaserScan, laserCallback)
     rospy.spin()
 

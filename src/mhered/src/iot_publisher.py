@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
 from random import uniform
+
 import rospy
+
 from mhered.msg import IoTSensor
 
 
@@ -9,12 +11,12 @@ def publisher():
     # create a new publisher:
     # specify topic name, type of message & queue size
 
-    pub = rospy.Publisher('iot_sensor_topic', IoTSensor, queue_size=10)
+    pub = rospy.Publisher("iot_sensor_topic", IoTSensor, queue_size=10)
 
     # initialize the node
     # anonymous=True flag so that rospy will choose a unique name
 
-    rospy.init_node('IoT_Publisher_node', anonymous=True)
+    rospy.init_node("IoT_Publisher_node", anonymous=True)
     # set the loop rate
     rate = rospy.Rate(1)  # 1Hz
 
@@ -34,7 +36,7 @@ def publisher():
         i += 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
         publisher()
     except rospy.ROSInterruptException:

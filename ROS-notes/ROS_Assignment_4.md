@@ -163,4 +163,3 @@ $ rosrun ros_service_assignment area_rect_client.py 2 3
 Client will request 2 + 3...
 Server returned 2 + 3 = 6.0
 ```
-

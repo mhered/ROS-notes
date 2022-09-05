@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
-import numpy as np
 import cv2
-
+import numpy as np
 
 # global variables
 global color_lower_bound, color_upper_bound
@@ -38,22 +37,22 @@ def filter_color(rgb_image, color_lower_bound, color_upper_bound):
 
 
 def find_contours(mask):
-    contours, hierarchy = cv2.findContours(mask,
-                                           cv2.RETR_EXTERNAL,
-                                           cv2.CHAIN_APPROX_SIMPLE)
+    contours, hierarchy = cv2.findContours(
+        mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
+    )
     return contours
 
 
 def draw_ball_contours(rgb_image, contours, is_bkg_black):
     if is_bkg_black:
-        contours_image = np.zeros(rgb_image.shape, 'uint8')
+        contours_image = np.zeros(rgb_image.shape, "uint8")
     else:
         contours_image = rgb_image
 
     for c in contours:
         area = cv2.contourArea(c)
 
-        if (area > 100):
+        if area > 100:
             # add contour in green
             cv2.drawContours(contours_image, [c], -1, (150, 250, 150), 2)
 
@@ -63,8 +62,7 @@ def draw_ball_contours(rgb_image, contours, is_bkg_black):
 
             # add min enclosing circle in yellow
             ((x, y), radius) = cv2.minEnclosingCircle(c)
-            cv2.circle(contours_image,
-                       (cx, cy), (int)(radius), (0, 255, 255), 2)
+            cv2.circle(contours_image, (cx, cy), (int)(radius), (0, 255, 255), 2)
 
     return contours_image
 
@@ -73,9 +71,9 @@ def get_contour_centroid(contour):
     M = cv2.moments(contour)
     cx = -1
     cy = -1
-    if (M['m00'] != 0):
-        cx = int(M['m10']/M['m00'])
-        cy = int(M['m01']/M['m00'])
+    if M["m00"] != 0:
+        cx = int(M["m10"] / M["m00"])
+        cy = int(M["m01"] / M["m00"])
     return cx, cy
 
 
@@ -86,13 +84,11 @@ def process_frame(rgb_frame, flip_image):
     # blur
     rgb_frame_blur = cv2.GaussianBlur(rgb_frame, (5, 5), 0)
     # detect color
-    mask = filter_color(
-        rgb_frame_blur, color_lower_bound, color_upper_bound)
+    mask = filter_color(rgb_frame_blur, color_lower_bound, color_upper_bound)
     # find contours
     contours = find_contours(mask)
     # draw contours
-    contoured_frame = draw_ball_contours(
-        rgb_frame, contours, is_bkg_black)
+    contoured_frame = draw_ball_contours(rgb_frame, contours, is_bkg_black)
 
     # mirror for display
     if flip_image:
@@ -109,12 +105,12 @@ def main():
     # or = 0 to use the live camera as source
 
     # video_source = 0
-    video_source = 'tennis-ball-video.mp4'
+    video_source = "tennis-ball-video.mp4"
 
     video_capture = cv2.VideoCapture(video_source)
 
     frame_counter = 0
-    while(True):
+    while True:
         ret, rgb_frame = video_capture.read()
 
         if video_source == 0:
@@ -140,5 +136,5 @@ def main():
     cv2.destroyAllWindows()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

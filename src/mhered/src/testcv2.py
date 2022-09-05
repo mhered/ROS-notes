@@ -1,15 +1,14 @@
 #!/usr/bin/env python
 
-import numpy as np
-
 import cv2
+import numpy as np
 
 image_name = "shapes.png"
 title = image_name + " Image"
 image_path = "/home/mhered/catkin_ws/src/mhered/src/images/"
 
 # read image
-img = cv2.imread(image_path+image_name)
+img = cv2.imread(image_path + image_name)
 
 # create a window
 cv2.namedWindow(title, cv2.WINDOW_NORMAL)
@@ -42,7 +41,7 @@ cv2.imshow(title_copy, img)
 cv2.waitKey(0)
 
 # read image as BGR
-img_color = cv2.imread(image_path+image_name, cv2.IMREAD_COLOR)
+img_color = cv2.imread(image_path + image_name, cv2.IMREAD_COLOR)
 blue, green, red = cv2.split(img_color)
 bgr_channels_img = np.concatenate((blue, green, red), axis=1)
 cv2.imshow("BGR channels", bgr_channels_img)

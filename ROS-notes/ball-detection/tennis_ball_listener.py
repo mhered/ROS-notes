@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-import rospy
 import cv2
-from sensor_msgs.msg import Image
-from cv_bridge import CvBridge, CvBridgeError
+import rospy
 from ball_detection import process_frame
+from cv_bridge import CvBridge, CvBridgeError
+from sensor_msgs.msg import Image
 
 
 def image_callback(ros_image):
@@ -28,7 +28,7 @@ def image_callback(ros_image):
 
 
 def main():
-    rospy.init_node('image_converter', anonymous=True)
+    rospy.init_node("image_converter", anonymous=True)
 
     # create a bridge
     global bridge
@@ -53,5 +53,5 @@ def main():
     cv2.destroyAllWindows()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

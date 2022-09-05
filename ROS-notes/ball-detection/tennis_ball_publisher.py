@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-import rospy
 import cv2
-from sensor_msgs.msg import Image
+import rospy
 from cv_bridge import CvBridge, CvBridgeError
+from sensor_msgs.msg import Image
 
 
 def publisher():
@@ -14,12 +14,12 @@ def publisher():
     # create a new publisher:
     # specify topic name, type of message & queue size
     # topic name is "tennis_ball_image"
-    pub = rospy.Publisher('tennis_ball_image', Image, queue_size=10)
+    pub = rospy.Publisher("tennis_ball_image", Image, queue_size=10)
 
     # initialize the node
     # anonymous=True flag so that rospy will choose a unique name
 
-    rospy.init_node('Video_Publisher_node', anonymous=True)
+    rospy.init_node("Video_Publisher_node", anonymous=True)
     # set the loop rate
     rate = rospy.Rate(50)  # 50Hz
 
@@ -39,7 +39,7 @@ def publisher():
         i += 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     global video_source, video_capture
     video_source = 0

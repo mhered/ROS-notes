@@ -21,16 +21,15 @@ Tested on Turtlebot3 in the maze and house environments.
 """
 
 
+import math
+import time
+
+import numpy as np
 import rospy
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
-from tf.transformations import euler_from_quaternion
-import numpy as np
 from sensor_msgs.msg import LaserScan
-
-
-import math
-import time
+from tf.transformations import euler_from_quaternion
 
 # use current location from the global variables
 # (constantly updated by odom_callback())
@@ -74,12 +73,12 @@ def scan_callback(message):
     global BEAM_ANGLE, LASER_RANGE
 
     ranges = np.asarray(message.ranges)
-    angles = np.degrees((message.angle_min +
-                         message.angle_increment * np.asarray(
-                             range(len(ranges)))))
+    angles = np.degrees(
+        (message.angle_min + message.angle_increment * np.asarray(range(len(ranges))))
+    )
 
     # shift angles >180 from [180 - 360) to [-180, 0)
-    angles_shifted = np.where(angles > 180, angles-360, angles)
+    angles_shifted = np.where(angles > 180, angles - 360, angles)
 
     angles_indeces = angles_shifted.argsort()
     angles_sorted = angles_shifted[angles_indeces[::-1]]
@@ -91,26 +90,32 @@ def scan_callback(message):
     clean_ranges_sorted[~np.isfinite(clean_ranges_sorted)] = LASER_RANGE
 
     # slice the beam at -BEAM_ANGLE +BEAM_ANGLE
-    fwd_ranges = [r for (a, r) in zip(
-        angles_sorted, clean_ranges_sorted) if abs(a) < BEAM_ANGLE]
+    fwd_ranges = [
+        r for (a, r) in zip(angles_sorted, clean_ranges_sorted) if abs(a) < BEAM_ANGLE
+    ]
     fwd_clearance = min(fwd_ranges)
 
-    right_ranges = [r for (a, r) in zip(
-        angles_sorted, clean_ranges_sorted) if (a > 30 and a < 100)]
+    right_ranges = [
+        r for (a, r) in zip(angles_sorted, clean_ranges_sorted) if (a > 30 and a < 100)
+    ]
     right_clearance = min(right_ranges)
 
-    left_ranges = [r for (a, r) in zip(
-        angles_sorted, clean_ranges_sorted) if (a < -30 and a > -100)]
+    left_ranges = [
+        r
+        for (a, r) in zip(angles_sorted, clean_ranges_sorted)
+        if (a < -30 and a > -100)
+    ]
     left_clearance = min(left_ranges)
 
     print(
         f"\nCLEARANCE FWD: {fwd_clearance:8.4}"
         f" LEFT: {left_clearance:8.4}"
-        f" RIGHT: {right_clearance:8.4}\n")
+        f" RIGHT: {right_clearance:8.4}\n"
+    )
 
 
 def marauder_robot(velocity_publisher):
-    """ Marauder robot based on Go to goal method """
+    """Marauder robot based on Go to goal method"""
 
     # use current location from the global variables
     # (constantly updated by odom_callback())
@@ -146,14 +151,14 @@ def marauder_robot(velocity_publisher):
         loop_rate.sleep()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
 
         # declare the node
-        rospy.init_node('marauder_node', anonymous=True)
+        rospy.init_node("marauder_node", anonymous=True)
 
         # declare velocity publisher
-        cmd_vel_topic = '/cmd_vel'
+        cmd_vel_topic = "/cmd_vel"
         velocity_publisher = rospy.Publisher(cmd_vel_topic, Twist, queue_size=10)
 
         # declare /odom subscriber
@@ -174,7 +179,7 @@ if __name__ == '__main__':
         LASER_RANGE = rospy.get_param("LASER_RANGE", 5.0)  # m
         BEAM_ANGLE = rospy.get_param("BEAM_ANGLE", 5.0)  # degrees
 
-        WAIT = rospy.get_param("WAIT", .5)  # s
+        WAIT = rospy.get_param("WAIT", 0.5)  # s
         RATE = rospy.get_param("RATE", 10.0)  # Hz
 
         THRESHOLD = rospy.get_param("THRESHOLD", 0.15)  # m/s
