@@ -2,17 +2,11 @@
 # Student 1: Tony Tao
 
 import math
-import time
 
-import roslib
 import rospy
 import tf
-import turtlesim.srv
 from geometry_msgs.msg import Twist
-from nav_msgs.msg import Odometry
 from sensor_msgs.msg import LaserScan
-from std_srvs.srv import Empty
-from yaml import scan
 
 
 def go_straight(xdist, ydist):

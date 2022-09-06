@@ -2,17 +2,16 @@
 
 # this is a simple program that subscribes to the odom topic and gets the position and orientation of the robot
 import math
-import time
 
 import rospy
 import tf
-from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
-from std_srvs.srv import Empty
 
 
-# callback function the odom pose (position+orientation) of the robot
 def odomPoseCallback(odom_msg):
+    """
+    callback function the odom pose (position+orientation) of the robot
+    """
 
     print("odom pose callback")
     # get the position of the robot

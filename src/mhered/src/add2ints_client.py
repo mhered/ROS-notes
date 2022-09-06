@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 
 import sys
@@ -6,7 +6,9 @@ import sys
 import rospy
 
 # import service definition
-from mhered.srv import AddTwoInts, AddTwoIntsRequest, AddTwoIntsResponse
+from mhered.srv import AddTwoInts
+
+# from mhered.srv import AddTwoIntsRequest, AddTwoIntsResponse
 
 
 def add_two_ints_client(x, y):
@@ -15,7 +17,8 @@ def add_two_ints_client(x, y):
     rospy.wait_for_service("add_two_ints")
 
     try:
-        # create a client object, the service name must be same defined in the server
+        # create a client object
+        # the service name must be same defined in the server
         my_request = rospy.ServiceProxy("add_two_ints", AddTwoInts)
 
         # what is this?

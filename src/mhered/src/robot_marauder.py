@@ -21,7 +21,6 @@ Tested on Turtlebot3 in the maze and house environments.
 """
 
 
-import math
 import time
 
 import numpy as np

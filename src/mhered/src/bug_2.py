@@ -54,7 +54,9 @@ def odom_callback(odom_message):
 
 
 def dist_p0_to_line_p1_p2(p_0, p_1, p_2):
-    """ " Return distance from point p_pl0 to line defined by points p_1 and p_2"""
+    """
+    Return distance from point p_pl0 to line defined by points p_1 and p_2
+    """
 
     x_0 = p_0[0]
     y_0 = p_0[1]
@@ -198,7 +200,8 @@ def rotate(velocity_publisher, omega_degrees, angle_degrees, is_clockwise):
         loop_rate.sleep()
 
         rospy.loginfo(
-            f"Angle rotated: {curr_yaw_degrees:10.4}deg Pose: ({x:10.4}m, {y:10.4}m, {math.degrees(yaw):10.4}deg)"
+            f"Angle rotated: {curr_yaw_degrees:10.4}deg "
+            + f"Pose: ({x:10.4}m, {y:10.4}m, {math.degrees(yaw):10.4}deg)"
         )
         if not (curr_yaw_degrees < angle_degrees):
             rospy.loginfo("Angle reached")
@@ -325,7 +328,8 @@ def follow_wall(velocity_publisher, goal):
         rospy.loginfo(
             # f"Pose: ({x:5.2}m, {y:5.2}m, {math.degrees(yaw):6.2}deg)" +
             # f"Goal at {math.degrees(angle_to_goal):10.4}deg " +
-            f"Clearances goal: {goal_clearance:10.4} right: {right_clearance:10.4} "
+            f"Clearances goal: {goal_clearance:10.4}"
+            + f"right: {right_clearance:10.4} "
             + f"v: {vel_lin:10.4}m/s w: {vel_ang:10.4}rad/s"
         )
 
@@ -364,7 +368,8 @@ def bug2_robot(velocity_publisher, goal_x, goal_y):
 
     (dist_to_goal, angle_to_goal) = robot_coordinates(goal_x, goal_y, x, y, yaw)
     rospy.loginfo(
-        f"** Goal at {dist_to_goal:10.4}(m), {math.degrees(angle_to_goal):10.4}(deg)\n\n"
+        f"** Goal at {dist_to_goal:10.4}(m), "
+        + f"{math.degrees(angle_to_goal):10.4}(deg)\n\n"
     )
 
     while True:

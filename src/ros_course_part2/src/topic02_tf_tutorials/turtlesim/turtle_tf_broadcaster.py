@@ -1,8 +1,7 @@
 #!/usr/bin/env python
-import roslib
+
 import rospy
 import tf
-import turtlesim.msg
 from turtlesim.msg import Pose
 
 

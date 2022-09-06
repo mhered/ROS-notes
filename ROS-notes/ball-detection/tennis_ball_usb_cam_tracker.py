@@ -42,6 +42,7 @@ def main():
     image_topic = "/usb_cam/image_raw"
 
     image_sub = rospy.Subscriber(image_topic, Image, image_callback)
+
     try:
         rospy.spin()
     except KeyboardInterrupt:

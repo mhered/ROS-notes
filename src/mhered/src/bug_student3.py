@@ -1,14 +1,10 @@
 #! /usr/bin/env python3
 # Student 3: Rizky Andhika Akbar
 
-import math
-
 # import ros stuff
 import rospy
 from geometry_msgs.msg import Twist
-from nav_msgs.msg import Odometry
 from sensor_msgs.msg import LaserScan
-from tf import transformations
 
 pub_ = None
 regions_ = {

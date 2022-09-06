@@ -8,12 +8,27 @@ repos:
       - id: check-yaml
       - id: end-of-file-fixer
       - id: mixed-line-ending
+
   - repo: https://github.com/psf/black
     rev: 22.3.0
     hooks:
       - id: black
+
   - repo: https://github.com/PyCQA/isort
     rev: 5.10.1
     hooks:
       - id: isort
         args: ["--profile", "black"]
+
+  - repo: https://github.com/PyCQA/flake8
+    rev: 4.0.1
+    hooks:
+      - id: flake8
+        additional_dependencies: [mccabe]
+        args: ["--max-line-length", "88", "--max-complexity", "10"]
+
+  - repo: https://github.com/PyCQA/pylint/
+    rev: v2.14.5
+    hooks:
+      - id: pylint
+        exclude: tests/  # Prevent files in tests/ to be passed in to pylint.

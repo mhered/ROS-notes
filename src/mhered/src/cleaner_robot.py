@@ -39,7 +39,8 @@ def move(velocity_publisher, speed, distance, is_forward):
         velocity_message.linear.x = -abs(speed)
 
     distance_moved = 0.0
-    loop_rate = rospy.Rate(50)  # we publish the velocity at 10 Hz (10 times per second)
+    # we publish the velocity at 10 Hz (10 times per second)
+    loop_rate = rospy.Rate(50)
 
     rospy.loginfo("Straight motion")
     while True:
@@ -49,7 +50,8 @@ def move(velocity_publisher, speed, distance, is_forward):
 
         distance_moved = abs(math.sqrt(((x - x0) ** 2) + ((y - y0) ** 2)))
         print(
-            f"Distance moved: {distance_moved:10.4} Pose: ({x:8.4}, {y:8.4}, {yaw:8.4})"
+            f"Distance moved: {distance_moved:10.4}"
+            + f" Pose: ({x:8.4}, {y:8.4}, {yaw:8.4})"
         )
         if not (distance_moved < distance):
             rospy.loginfo("Distance reached")
@@ -73,7 +75,8 @@ def rotate(velocity_publisher, omega_degrees, angle_degrees, is_clockwise):
     else:
         velocity_message.angular.z = abs(omega)
 
-    loop_rate = rospy.Rate(50)  # we publish the velocity at 10 Hz (10 times per second)
+    # we publish the velocity at 10 Hz (10 times per second)
+    loop_rate = rospy.Rate(50)
 
     rospy.loginfo("Rotation in place")
 
@@ -90,7 +93,8 @@ def rotate(velocity_publisher, omega_degrees, angle_degrees, is_clockwise):
         loop_rate.sleep()
 
         print(
-            f"Angle rotated: {curr_yaw_degrees:10.4} Pose: ({x:8.4}, {y:8.4}, {yaw:8.4})"
+            f"Angle rotated: {curr_yaw_degrees:10.4}"
+            + f" Pose: ({x:8.4}, {y:8.4}, {yaw:8.4})"
         )
         if not (curr_yaw_degrees < angle_degrees):
             rospy.loginfo("Angle reached")
@@ -131,7 +135,9 @@ def go_to(velocity_publisher, goal):
     # declare a Twist message to send velocity commands
     velocity_message = Twist()
 
-    # use current location from the global variable (constantly updated by pose_callback())
+    # use current location from the global variable
+    # (constantly updated by pose_callback())
+
     global x, y, yaw
 
     x_goal = goal[0]
@@ -141,7 +147,8 @@ def go_to(velocity_publisher, goal):
     K_DISTANCE = 0.6
     K_ANGLE = 15
 
-    loop_rate = rospy.Rate(50)  # we publish the velocity at 10 Hz (10 times per second)
+    # we publish the velocity at 10 Hz (10 times per second)
+    loop_rate = rospy.Rate(50)
 
     rospy.loginfo(f"Go to goal: {goal}")
 
@@ -151,7 +158,8 @@ def go_to(velocity_publisher, goal):
         angle_to_goal = math.atan2(y_goal - y, x_goal - x)
 
         print(
-            f"Distance to goal: {distance_to_goal:10.4} Pose: ({x:8.4}, {y:8.4}, {yaw:8.4})"
+            f"Distance to goal: {distance_to_goal:10.4}"
+            + f" Pose: ({x:8.4}, {y:8.4}, {yaw:8.4})"
         )
 
         if distance_to_goal < THRESHOLD:
@@ -173,7 +181,8 @@ def go_to(velocity_publisher, goal):
 def spiral(velocity_publisher, omega, d_vel):
     """Spiral method"""
 
-    # use current location from the global variable (constantly updated by pose_callback())
+    # use current location from the global variable
+    # (constantly updated by pose_callback())
     global x, y
 
     # declare a Twist message to send velocity commands
@@ -182,7 +191,8 @@ def spiral(velocity_publisher, omega, d_vel):
     OMEGA = omega
     VEL_INCREMENT = d_vel
 
-    loop_rate = rospy.Rate(50)  # we publish the velocity at 10 Hz (10 times per second)
+    # we publish the velocity at 10 Hz (10 times per second)
+    loop_rate = rospy.Rate(50)
 
     rospy.loginfo("Spiral")
 
@@ -192,7 +202,8 @@ def spiral(velocity_publisher, omega, d_vel):
         velocity_message.angular.z = OMEGA
 
         print(
-            f"Linear speed: {velocity_message.linear.x:10.4} Pose: ({x:8.4}, {y:8.4}, {yaw:8.4})"
+            f"Linear speed: {velocity_message.linear.x:10.4}"
+            + f" Pose: ({x:8.4}, {y:8.4}, {yaw:8.4})"
         )
 
         velocity_publisher.publish(velocity_message)
