@@ -4,6 +4,14 @@ This repo contains my notes, assignments and learning material to get started wi
 
 [ROS 1 cheat sheet](./ROS-notes/0.ROS1-Cheat-Sheet.md)
 
+06/09/22: Added pre-commit hooks to improve code quality. Reformatting is currently WIP. Until the needed reformatting is complete it is possible to commit skipping linting checks with:
+
+```bash
+$ SKIP=flake8,pylint git commit ...
+```
+
+
+
 ## ROS for Beginners I: Basics, Motion, and OpenCV
 
 [ROS for Beginners: Basics, Motion, and OpenCV](https://www.udemy.com/course/ros-essentials/)  
