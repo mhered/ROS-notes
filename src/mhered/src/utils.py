@@ -6,6 +6,13 @@ import time
 import numpy as np
 
 
+def get_t_from_stamp(stamp):
+    sec = stamp.secs
+    nsec = stamp.nsecs
+    t = sec + nsec / 1e9  # 1s = 10**9 nanosecs
+    return t
+
+
 def robot_coordinates(x_goal, y_goal, x, y, yaw):
     """Returns distance and angle (rad) of goal relative to robot frame"""
     xR_goal = x_goal - x

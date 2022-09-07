@@ -16,9 +16,10 @@ import numpy as np
 import rospy
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
+from robot_lib import rotate
 from sensor_msgs.msg import LaserScan
 from tf.transformations import euler_from_quaternion
-from utils import find_nearest, wrap_to_180
+from utils import get_clearance, get_t_from_stamp, robot_coordinates, wrap_to_180
 
 # use current location from the global variables
 # (constantly updated by odom_callback())
@@ -41,14 +42,7 @@ global ANGLE_TOL, SAFETY_DIST, MIN_CLEARANCE
 global WAIT, LIN_SPEED, ROT_SPEED, RATE
 
 
-def get_t_from_stamp(stamp):
-    sec = stamp.secs
-    nsec = stamp.nsecs
-    t = sec + nsec / 1e9  # 1s = 10**9 nanosecs
-    return t
-
-
-def odom_callback(odom_message):
+def odom_callback(msg):
     """
     Constantly extract robot pose from /odom nav_msgs/Odometry
     """
@@ -56,34 +50,17 @@ def odom_callback(odom_message):
     # update global variables
     global x, y, yaw, t
 
-    x = odom_message.pose.pose.position.x
-    y = odom_message.pose.pose.position.y
+    x = msg.pose.pose.position.x
+    y = msg.pose.pose.position.y
 
-    q = odom_message.pose.pose.orientation
+    q = msg.pose.pose.orientation
     q_as_list = [q.x, q.y, q.z, q.w]
     (_, _, yaw) = euler_from_quaternion(q_as_list)
 
-    t = get_t_from_stamp(odom_message.header.stamp)
+    t = get_t_from_stamp(msg.header.stamp)
 
 
-def get_clearance(angles, ranges, beam_dir, beam_aperture):
-    """
-    Takes an array of ranges measured at specified angles
-    Return clearance in a specified beam direction and aperture
-
-    Note: angles, beam_dir, beam aperture must all be in consistent units
-    (i.e. all in degrees or all in radians)
-    """
-    ranges = [
-        r
-        for (a, r) in zip(angles, ranges)
-        if (a > (beam_dir - beam_aperture) and a < (beam_dir + beam_aperture))
-    ]
-    clearance = np.mean(ranges)
-    return clearance
-
-
-def scan_callback(message):
+def scan_callback(msg):
     """
     Constantly update global clearances from /scan sensor_msgs/LaserScan
     """
@@ -96,9 +73,9 @@ def scan_callback(message):
     global BEAM_ANGLE, LASER_RANGE
     global GOAL_X, GOAL_Y
 
-    ranges = np.asarray(message.ranges)
+    ranges = np.asarray(msg.ranges)
     angles = np.degrees(
-        (message.angle_min + message.angle_increment * np.asarray(range(len(ranges))))
+        msg.angle_min + msg.angle_increment * np.asarray(range(len(ranges)))
     )
 
     # wrap angles to [-180, 180)
@@ -141,71 +118,9 @@ def scan_callback(message):
         beam_aperture=BEAM_ANGLE,
     )
 
-    """
-    print(
-        f"\nCLEARANCE FWD: {fwd_clearance:8.4}" +
-        f" GOAL: {goal_clearance:8.4}" +
-        f" angle2goal: {angle2goal_deg:8.4}" +
-        f" RIGHT: {right_clearance:8.4}\n"
-    )
-    """
-
-
-def robot_coordinates(x_goal, y_goal, x, y, yaw):
-    """Returns distance and angle (rad) of goal relative to robot frame"""
-    xR_goal = x_goal - x
-    yR_goal = y_goal - y
-
-    distance = math.sqrt(xR_goal**2 + yR_goal**2)
-    direction_global = math.atan2(yR_goal, xR_goal)
-    direction_relative = direction_global - yaw
-    return distance, direction_relative
-
-
-def rotate(velocity_publisher, omega_degrees, angle_degrees, is_clockwise):
-    """Rotation in place method"""
-
-    # declare a Twist message to send velocity commands
-    velocity_message = Twist()
-
-    omega = math.radians(omega_degrees)
-
-    if is_clockwise:
-        velocity_message.angular.z = -abs(omega)
-    else:
-        velocity_message.angular.z = abs(omega)
-
-    # publish the velocity at RATE Hz (RATE times per second)
-    loop_rate = rospy.Rate(RATE)
-
-    rospy.loginfo("Rotation in place")
-
-    # get initial timestamp
-    t0 = rospy.Time.now().to_sec()
-
-    while True:
-
-        velocity_publisher.publish(velocity_message)
-
-        # get initial timestamp
-        t1 = rospy.Time.now().to_sec()
-        curr_yaw_degrees = (t1 - t0) * omega_degrees
-        loop_rate.sleep()
-
-        rospy.loginfo(
-            f"Angle rotated: {curr_yaw_degrees:8.4}deg Pose: ({x:8.4}m, {y:8.4}m, {math.degrees(yaw):8.4}deg)"
-        )
-        if not (curr_yaw_degrees < angle_degrees):
-            rospy.loginfo("Angle reached")
-            break
-
-    # stop the robot after the angle is reached
-    velocity_message.angular.z = 0.0
-    velocity_publisher.publish(velocity_message)
-
 
 def go_to(velocity_publisher, goal):
-    """Go to goal method"""
+    """Go to goal method with obstacle detection"""
 
     # declare a Twist message to send velocity commands
     velocity_message = Twist()
@@ -310,6 +225,7 @@ def turn_around_obstacle(velocity_publisher, goal, exit):
         omega_degrees=ROT_SPEED,
         angle_degrees=90,
         is_clockwise=False,
+        rate=RATE,
     )
 
     # initialize main loop
