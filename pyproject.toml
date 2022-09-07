@@ -6,6 +6,7 @@ authors = ["Manuel Heredia <manolo.heredia@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
+numpy = "^1.23.2"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^2.20.0"
