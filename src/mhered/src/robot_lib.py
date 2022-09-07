@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
+"""
+Library of robot reusable behaviours:
+* rotate(velocity_publisher, omega_degrees, angle_degrees, is_clockwise, rate=50)
+* ...
 
+"""
 import math
 
 import rospy
@@ -25,15 +30,15 @@ def rotate(velocity_publisher, omega_degrees, angle_degrees, is_clockwise, rate=
     rospy.loginfo("Rotation in place")
 
     # get initial timestamp
-    t0 = rospy.Time.now().to_sec()
+    t_0 = rospy.Time.now().to_sec()
 
     while True:
 
         velocity_publisher.publish(velocity_message)
 
         # get initial timestamp
-        t1 = rospy.Time.now().to_sec()
-        curr_yaw_degrees = (t1 - t0) * omega_degrees
+        t_1 = rospy.Time.now().to_sec()
+        curr_yaw_degrees = (t_1 - t_0) * omega_degrees
         loop_rate.sleep()
 
         rospy.loginfo(
