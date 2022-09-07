@@ -1,8 +1,38 @@
 #!/usr/bin/env python3
 
+import math
 import time
 
 import numpy as np
+
+
+def robot_coordinates(x_goal, y_goal, x, y, yaw):
+    """Returns distance and angle (rad) of goal relative to robot frame"""
+    xR_goal = x_goal - x
+    yR_goal = y_goal - y
+
+    distance = math.sqrt(xR_goal**2 + yR_goal**2)
+    direction_global = math.atan2(yR_goal, xR_goal)
+    direction_relative = direction_global - yaw
+    return distance, direction_relative
+
+
+def get_clearance(angles, ranges, beam_dir, beam_aperture):
+    """
+    Take an array of ranges measured at specified angles
+    Return clearance in a specified beam direction and aperture
+
+    Note: angles, beam_dir, beam aperture must all be in consistent units
+    (i.e. all in degrees or all in radians)
+    """
+    ranges = [
+        r
+        for (a, r) in zip(angles, ranges)
+        if (a > (beam_dir - beam_aperture) and a < (beam_dir + beam_aperture))
+    ]
+    clearance = np.mean(ranges)
+
+    return clearance
 
 
 def wrap_to_180(angle):

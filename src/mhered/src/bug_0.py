@@ -16,6 +16,7 @@ from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import LaserScan
 from tf.transformations import euler_from_quaternion
+from utils import get_clearance, robot_coordinates, wrap_to_180
 
 # use current location from the global variables
 # (constantly updated by odom_callback())
@@ -37,7 +38,7 @@ global ANGLE_TOL, SAFETY_DIST, MIN_CLEARANCE
 global WAIT, LIN_SPEED, ROT_SPEED, RATE
 
 
-def odom_callback(odom_message):
+def odom_callback(msg):
     """
     Constantly extract robot pose from /odom nav_msgs/Odometry
     """
@@ -45,32 +46,14 @@ def odom_callback(odom_message):
     # update global variables
     global x, y, yaw
 
-    x = odom_message.pose.pose.position.x
-    y = odom_message.pose.pose.position.y
-    q = odom_message.pose.pose.orientation
+    x = msg.pose.pose.position.x
+    y = msg.pose.pose.position.y
+    q = msg.pose.pose.orientation
     q_as_list = [q.x, q.y, q.z, q.w]
     (_, _, yaw) = euler_from_quaternion(q_as_list)
 
 
-def get_clearance(angles, ranges, beam_dir, beam_aperture):
-    """
-    Take an array of ranges measured at specified angles
-    Return clearance in a specified beam direction and aperture
-
-    Note: angles, beam_dir, beam aperture must all be in consistent units
-    (i.e. all in degrees or all in radians)
-    """
-    ranges = [
-        r
-        for (a, r) in zip(angles, ranges)
-        if (a > (beam_dir - beam_aperture) and a < (beam_dir + beam_aperture))
-    ]
-    clearance = np.mean(ranges)
-
-    return clearance
-
-
-def scan_callback(message):
+def scan_callback(msg):
     """
     Constantly update global clearances from /scan sensor_msgs/LaserScan
     """
@@ -83,16 +66,16 @@ def scan_callback(message):
     global BEAM_ANGLE, LASER_RANGE
     global GOAL_X, GOAL_Y
 
-    ranges = np.asarray(message.ranges)
+    ranges = np.asarray(msg.ranges)
     angles = np.degrees(
-        (message.angle_min + message.angle_increment * np.asarray(range(len(ranges))))
+        msg.angle_min + msg.angle_increment * np.asarray(range(len(ranges)))
     )
 
-    # shift angles >180 from [180 - 360) to [-180, 0)
-    angles_shifted = np.where(angles > 180, angles - 360, angles)
+    # wrap angles to [-180, 180)
+    angles_wrapped = wrap_to_180(angles)
 
-    angles_indeces = angles_shifted.argsort()
-    angles_sorted = angles_shifted[angles_indeces[::-1]]
+    angles_indeces = angles_wrapped.argsort()
+    angles_sorted = angles_wrapped[angles_indeces[::-1]]
     ranges_sorted = ranges[angles_indeces[::-1]]
 
     # deep copy to avoid modifying ydata
@@ -116,7 +99,9 @@ def scan_callback(message):
         beam_aperture=BEAM_ANGLE,
     )
 
-    (distance2goal, angle2goal_rads) = robot_coordinates(GOAL_X, GOAL_Y, x, y, yaw)
+    (distance2goal, angle2goal_rads) = robot_coordinates(
+        x_goal=GOAL_X, y_goal=GOAL_Y, x=x, y=y, yaw=yaw
+    )
 
     angle2goal_deg = math.degrees(angle2goal_rads)
     if angle2goal_deg > 180:
@@ -137,17 +122,6 @@ def scan_callback(message):
         f" RIGHT: {right_clearance:10.4}\n"
     )
     """
-
-
-def robot_coordinates(x_goal, y_goal, x, y, yaw):
-    """Returns distance and angle (rad) of goal relative to robot frame"""
-    xR_goal = x_goal - x
-    yR_goal = y_goal - y
-
-    distance = math.sqrt(xR_goal**2 + yR_goal**2)
-    direction_global = math.atan2(yR_goal, xR_goal)
-    direction_relative = direction_global - yaw
-    return distance, direction_relative
 
 
 def rotate(velocity_publisher, omega_degrees, angle_degrees, is_clockwise):
@@ -184,7 +158,7 @@ def rotate(velocity_publisher, omega_degrees, angle_degrees, is_clockwise):
             f"Angle rotated: {curr_yaw_degrees:10.4}deg "
             + f"Pose: ({x:10.4}m, {y:10.4}m, {math.degrees(yaw):10.4}deg)"
         )
-        if not (curr_yaw_degrees < angle_degrees):
+        if not curr_yaw_degrees < angle_degrees:
             rospy.loginfo("Angle reached")
             break
 
@@ -217,7 +191,9 @@ def go_to(velocity_publisher, goal):
 
     while True:
 
-        (distance_to_goal, angle_to_goal) = robot_coordinates(x_goal, y_goal, x, y, yaw)
+        (distance_to_goal, angle_to_goal) = robot_coordinates(
+            x_goal=x_goal, y_goal=y_goal, x=x, y=y, yaw=yaw
+        )
 
         if distance_to_goal < THRESHOLD:
             rospy.loginfo("** GOAL REACHED\n\n")
@@ -232,6 +208,7 @@ def go_to(velocity_publisher, goal):
         vel_lin = min(
             LIN_SPEED, K_DISTANCE * fwd_clearance, K_DISTANCE * distance_to_goal
         )
+
         vel_ang = K_ANGLE * angle_to_goal
 
         rospy.loginfo(
@@ -292,7 +269,9 @@ def follow_wall(velocity_publisher, goal):
     # main loop to follow wall until clearance towards goal
     while True:
 
-        (distance_to_goal, angle_to_goal) = robot_coordinates(x_goal, y_goal, x, y, yaw)
+        (distance_to_goal, angle_to_goal) = robot_coordinates(
+            x_goal=x_goal, y_goal=y_goal, x=x, y=y, yaw=yaw
+        )
 
         vel_lin = min(LIN_SPEED, K_DISTANCE * fwd_clearance)
         vel_ang = K_ANGLE * (SAFETY_DIST - right_clearance)
@@ -336,7 +315,10 @@ def bug0_robot(velocity_publisher, goal_x, goal_y):
     global ANGLE_TOL, SAFETY_DIST, MIN_CLEARANCE
     global WAIT, LIN_SPEED, ROT_SPEED, RATE
 
-    (dist_to_goal, angle_to_goal) = robot_coordinates(goal_x, goal_y, x, y, yaw)
+    (dist_to_goal, angle_to_goal) = robot_coordinates(
+        x_goal=goal_x, y_goal=goal_y, x=x, y=y, yaw=yaw
+    )
+
     rospy.loginfo(
         f"** Goal at {dist_to_goal:10.4}(m), "
         + f"{math.degrees(angle_to_goal):10.4}(deg)\n\n"
