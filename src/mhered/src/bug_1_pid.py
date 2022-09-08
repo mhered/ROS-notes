@@ -12,7 +12,7 @@
 import math
 import time
 
-import numpy as np
+import numpy as np  # pylint: disable=E0401
 import rospy
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
@@ -107,14 +107,12 @@ def scan_callback(msg):
         beam_aperture=BEAM_ANGLE,
     )
 
-    (distance2goal, angle2goal_rads) = robot_coordinates(GOAL_X, GOAL_Y, x, y, yaw)
-
-    angle2goal_deg = wrap_to_180(math.degrees(angle2goal_rads))
+    _, angle2goal = robot_coordinates(GOAL_X, GOAL_Y, x, y, yaw)
 
     goal_clearance = get_clearance(
         angles=angles_sorted,
         ranges=clean_ranges_sorted,
-        beam_dir=angle2goal_deg,
+        beam_dir=angle2goal,
         beam_aperture=BEAM_ANGLE,
     )
 
@@ -158,12 +156,12 @@ def go_to(velocity_publisher, goal):
         vel_lin = min(
             LIN_SPEED, K_DISTANCE * fwd_clearance, K_DISTANCE * distance_to_goal
         )
-        vel_ang = K_ANGLE * angle_to_goal
+        vel_ang = K_ANGLE * math.radians(angle_to_goal)
 
         rospy.loginfo(
             # f"Pose: ({x:5.2}m, {y:5.2}m, {math.degrees(yaw):6.2}deg)" +
             f"Goal at {distance_to_goal:8.4}m "
-            + f"{math.degrees(angle_to_goal):8.4}deg "
+            + f"{angle_to_goal:8.4}deg "
             + f"v: {vel_lin:8.4}m/s w: {vel_ang:8.4}rad/s"
         )
 
@@ -181,7 +179,13 @@ def go_to(velocity_publisher, goal):
     return success
 
 
-def turn_around_obstacle(velocity_publisher, goal, exit):
+def pid(e, i, d, Kp, Ki, Kd):  # pylint: disable=R0913
+    """Basic PID"""
+    cmd = Kp * e + Ki * i + Kd * d
+    return cmd
+
+
+def turn_around_obstacle(velocity_publisher, goal, exit_point):  # pylint: disable=R0914
     """Turn around obstacle method"""
 
     # declare a Twist message to send velocity commands
@@ -194,8 +198,8 @@ def turn_around_obstacle(velocity_publisher, goal, exit):
     x_goal = goal[0]
     y_goal = goal[1]
 
-    x_exit = exit[0]
-    y_exit = exit[1]
+    x_exit = exit_point[0]
+    y_exit = exit_point[1]
 
     # initialize search for point closest to goal
     x_closest = x_exit
@@ -221,7 +225,7 @@ def turn_around_obstacle(velocity_publisher, goal, exit):
 
     # rotate 90deg anticlockwise
     rotate(
-        velocity_publisher=velocity_publisher,
+        vel_publisher=velocity_publisher,
         omega_degrees=ROT_SPEED,
         angle_degrees=90,
         is_clockwise=False,
@@ -232,9 +236,9 @@ def turn_around_obstacle(velocity_publisher, goal, exit):
     iteration = 0
     last_t = t
     last_right_clearance = right_clearance
-    time.sleep(WAIT)
-
     i = 0
+
+    time.sleep(WAIT)
 
     # main loop to follow wall until exit reached
     while True:
@@ -245,13 +249,14 @@ def turn_around_obstacle(velocity_publisher, goal, exit):
 
         (distance_to_exit, _) = robot_coordinates(x_exit, y_exit, x, y, yaw)
 
-        # if goal reached then exit
+        # if goal reached then exit loop
         if distance_to_goal < THRESHOLD:
             rospy.loginfo("** GOAL REACHED\n\n")
             break
 
-        # if after some iterations exit point is reached then exit
-        # need to allow some iterations otherwise the turn aborts
+        # if after some iterations the exit point is reached it means the
+        # turn around the obstacle is complete so exit the loop
+        # allow e.g. 15 iterations otherwise the turn aborts before starting
         if iteration > 15 and distance_to_exit < THRESHOLD:
             rospy.loginfo("** EXIT POINT REACHED\n\n")
             break
@@ -264,31 +269,12 @@ def turn_around_obstacle(velocity_publisher, goal, exit):
 
         vel_lin = min(LIN_SPEED, K_DISTANCE * fwd_clearance)
 
-        dt = t - last_t
-        delta_clearance = right_clearance - last_right_clearance
-
         # PID for vel_ang
-
-        Kp = -K_ANGLE
         e = right_clearance - SAFETY_DIST
-        Ki = -0.00
+        dt = t - last_t
         i += e * dt
-        Kd = -0.1
-        d = delta_clearance / dt
-
-        vel_ang = Kp * e + Ki * i + Kd * d
-
-        """
-        # clip abs(vel_ang) to ROT_SPEED
-        if vel_ang > 0:
-            vel_ang = min(
-                ROT_SPEED,
-                vel_ang)
-        elif vel_ang < 0:
-            vel_ang = max(
-                -ROT_SPEED,
-                vel_ang)
-        """
+        d = (right_clearance - last_right_clearance) / dt
+        vel_ang = pid(e, i, d, Kp=-K_ANGLE, Ki=-0.00, Kd=-0.1)
 
         velocity_message.linear.x = vel_lin
         velocity_message.angular.z = vel_ang
@@ -297,7 +283,7 @@ def turn_around_obstacle(velocity_publisher, goal, exit):
 
         rospy.loginfo(
             # f"Pose: ({x:5.2}m, {y:5.2}m, {math.degrees(yaw):6.2}deg)" +
-            f"Goal at {math.degrees(angle_to_goal):8.4}deg "
+            f"Goal at {angle_to_goal:8.4}deg "
             + f"Clearances goal: {goal_clearance:8.4} right: {right_clearance:8.4} "
             + f"v: {vel_lin:8.4}m/s w: {vel_ang:8.4}rad/s"
         )
@@ -327,28 +313,29 @@ def bug1_robot(velocity_publisher, goal_x, goal_y):
     global WAIT, LIN_SPEED, ROT_SPEED, RATE
 
     (dist_to_goal, angle_to_goal) = robot_coordinates(goal_x, goal_y, x, y, yaw)
-    rospy.loginfo(
-        f"** Goal at {dist_to_goal:8.4}(m), {math.degrees(angle_to_goal):8.4}(deg)\n\n"
-    )
+    rospy.loginfo(f"** Goal at {dist_to_goal:8.4}(m), {angle_to_goal:8.4}(deg)\n\n")
 
     while True:
         # Behavior 1: go to goal unless blocked by obstacle
         rospy.loginfo("** BEHAVIOR 1: GO TO GOAL\n\n")
         time.sleep(WAIT)
         success = go_to(velocity_publisher=velocity_publisher, goal=[goal_x, goal_y])
-        if success:
+        if success:  # exit the loop if goal is reached
             break
-        else:
-            rospy.loginfo("** REACHED OBSTACLE\n\n")
-            # remember start of turn around obstacle
-            x0 = x
-            y0 = y
-            time.sleep(WAIT)
+        # otherwise an obstacle was reached
+        rospy.loginfo("** REACHED OBSTACLE\n\n")
+
+        # remember starting point of the turn around obstacle
+        x0 = x
+        y0 = y
+        time.sleep(WAIT)
 
         # Behavior 2: follow wall for a full turn around obstacle
         rospy.loginfo("** BEHAVIOR 2: FOLLOW WALL\n\n")
         x_closest, y_closest = turn_around_obstacle(
-            velocity_publisher=velocity_publisher, goal=[goal_x, goal_y], exit=[x0, y0]
+            velocity_publisher=velocity_publisher,
+            goal=[goal_x, goal_y],
+            exit_point=[x0, y0],
         )
         rospy.loginfo("** FULL TURN AROUND OBSTACLE COMPLETED\n\n")
         time.sleep(WAIT)
@@ -358,7 +345,7 @@ def bug1_robot(velocity_publisher, goal_x, goal_y):
         _ = turn_around_obstacle(
             velocity_publisher=velocity_publisher,
             goal=[goal_x, goal_y],
-            exit=[x_closest, y_closest],
+            exit_point=[x_closest, y_closest],
         )
         rospy.loginfo("** CLOSEST PT TO GOAL REACHED\n\n")
         time.sleep(WAIT)
@@ -376,7 +363,7 @@ if __name__ == "__main__":
 
         # declare velocity publisher
         cmd_vel_topic = "/cmd_vel"
-        velocity_publisher = rospy.Publisher(cmd_vel_topic, Twist, queue_size=10)
+        vel_publisher = rospy.Publisher(cmd_vel_topic, Twist, queue_size=10)
 
         # declare /odom subscriber
         odom_topic = "/odom"
@@ -419,7 +406,7 @@ if __name__ == "__main__":
         # launch the bug1 robot app
         time.sleep(15.0)
         rospy.loginfo("** LAUNCHING BUG1\n\n")
-        bug1_robot(velocity_publisher=velocity_publisher, goal_x=GOAL_X, goal_y=GOAL_Y)
+        bug1_robot(velocity_publisher=vel_publisher, goal_x=GOAL_X, goal_y=GOAL_Y)
 
         # Do I need this? How to use rospy.spin()?
         # If I remove it the node dies after reaching the goal
