@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Library of robot reusable behaviours:
-* rotate(velocity_publisher, omega_degrees, angle_degrees, is_clockwise, rate=50)
+* rotate(vel_publisher, omega_degrees, angle_degrees, is_clockwise, rate=50)
 * ...
 
 """
@@ -11,7 +11,7 @@ import rospy
 from geometry_msgs.msg import Twist
 
 
-def rotate(velocity_publisher, omega_degrees, angle_degrees, is_clockwise, rate=50):
+def rotate(vel_publisher, omega_degrees, angle_degrees, is_clockwise, rate=50):
     """Rotation in place method"""
 
     # declare a Twist message to send velocity commands
@@ -34,7 +34,7 @@ def rotate(velocity_publisher, omega_degrees, angle_degrees, is_clockwise, rate=
 
     while True:
 
-        velocity_publisher.publish(velocity_message)
+        vel_publisher.publish(velocity_message)
 
         # get initial timestamp
         t_1 = rospy.Time.now().to_sec()
@@ -52,4 +52,4 @@ def rotate(velocity_publisher, omega_degrees, angle_degrees, is_clockwise, rate=
 
     # stop the robot after the angle is reached
     velocity_message.angular.z = 0.0
-    velocity_publisher.publish(velocity_message)
+    vel_publisher.publish(velocity_message)
