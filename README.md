@@ -4,13 +4,12 @@ This repo contains my notes, assignments and learning material to get started wi
 
 [ROS 1 cheat sheet](./ROS-notes/0.ROS1-Cheat-Sheet.md)
 
-06/09/22: Added pre-commit hooks to improve code quality. Reformatting is currently WIP. Until the needed reformatting is complete it is possible to commit skipping linting checks with:
+06/09/22: Added pre-commit hooks to improve code quality. Reformatting is currently WIP. Until the needed reformatting is complete i~~t is possible to commit skipping linting checks with: `$ SKIP=flake8,pylint git commit ...`~~(08/09/22) some checks  of variable names and use of globals are temporarily disabled with `.pylintrc`:
 
-```bash
-$ SKIP=flake8,pylint git commit ...
-```
-
-
+* `C0103`, uppercase naming style for constants
+* `W0602`, global-variable-not-assigned
+* `W0603`, global-statement
+* `W0604`, global-at-module-level 
 
 ## ROS for Beginners I: Basics, Motion, and OpenCV
 
