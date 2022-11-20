@@ -76,11 +76,7 @@ Udemy ROS for Beginners course by [Anis Koubaa](https://www.udemy.com/user/anis-
 
 ## Articulated Robotics
 
-[Articulated Robotics](https://articulatedrobotics.xyz/) is a phenomenal series of blog and video tutorials by Josh Newans including a step by step guide to building your own ROS2-based mobile robot with camera and LIDAR.
-
-[Part 1](./ROS-notes/10.ROS2-Getting-ready-Aug22-L01-XX.md): Getting ready for ROS (Videos #01 - #08 and Extra)
-
-Part 2: Making a Mobile Robot project
+[Articulated Robotics](https://articulatedrobotics.xyz/) is a phenomenal series of blog and video tutorials by Josh Newans including a step by step guide to building your own ROS2-based mobile robot with camera and LIDAR. My notes on Articulated Robotics have moved to the [manolobot](https://github.com/mhered/manolobot) repository where I keep my own project inspired in these tutorials.
 
 ## Other ROS resources to check:
 
